@@ -1,18 +1,27 @@
 package li.materials.globe.src
 {
 
+	import away3d.arcane;
+	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
+	import away3d.materials.methods.FresnelSpecularMethod;
+	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
 	import away3d.textures.BitmapCubeTexture;
+	import away3d.textures.BitmapTexture;
 	import away3d.utils.Cast;
+
+	import flash.display.BitmapData;
+	import flash.display.BitmapDataChannel;
+	import flash.geom.Point;
 
 	import li.base.ListingBase;
 
-	public class GlobeListing02 extends ListingBase
+	public class GlobeListing04 extends ListingBase
 	{
 		// Diffuse map for globe.
 		[Embed(source="../../../../embeds/globe/land_ocean_ice_2048_match.jpg")]
@@ -25,6 +34,14 @@ package li.materials.globe.src
 		// Specular map for globe.
 		[Embed(source="../../../../embeds/globe/earth_specular_2048.jpg")]
 		public static var EarthSpecular:Class;
+
+		// Night diffuse map for globe.
+		[Embed(source="../../../../embeds/globe/land_lights_16384.jpg")]
+		public static var EarthNight:Class;
+
+		// Diffuse map for sky.
+		[Embed(source="../../../../embeds/globe/cloud_combined_2048.jpg")]
+		public static var SkyDiffuse:Class;
 
 		// Skybox textures.
 		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
@@ -40,9 +57,9 @@ package li.materials.globe.src
 		[Embed(source="../../../../embeds/skybox/space_negZ.jpg")]
 		private var NegZ:Class;
 
-		private var _earth:Mesh;
+		private var _earth:ObjectContainer3D;
 
-		public function GlobeListing02() {
+		public function GlobeListing04() {
 			super();
 		}
 
@@ -93,19 +110,45 @@ package li.materials.globe.src
 
 		private function createEarth():void {
 
-			// Material.
-			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthDiffuse ) );
-			earthMaterial.normalMap = Cast.bitmapTexture( EarthNormals );
-			earthMaterial.specularMap = Cast.bitmapTexture( EarthSpecular );
-			earthMaterial.gloss = 5;
-			earthMaterial.specular = 0.75;
-			earthMaterial.ambient = 0.2;
-			earthMaterial.lightPicker = _lightPicker;
-
-			// Geometry.
-			_earth = new Mesh( new SphereGeometry( 100, 200, 100 ), earthMaterial );
+			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
 			_view.scene.addChild( _earth );
+
+			// Fresnel specular method for earth.
+			var groundFresnelSpecular:FresnelSpecularMethod = new FresnelSpecularMethod( true );
+			groundFresnelSpecular.fresnelPower = 1;
+			groundFresnelSpecular.normalReflectance = 0.1;
+			groundFresnelSpecular.shadingModel = SpecularShadingModel.PHONG;
+
+			// Earth material.
+			var groundMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthDiffuse ) );
+			groundMaterial.specularMethod = groundFresnelSpecular;
+			groundMaterial.normalMap = Cast.bitmapTexture( EarthNormals );
+			groundMaterial.specularMap = Cast.bitmapTexture( EarthSpecular );
+			groundMaterial.ambientTexture = Cast.bitmapTexture( EarthNight );
+			groundMaterial.gloss = 5;
+			groundMaterial.specular = 1;
+			groundMaterial.ambientColor = 0xFFFFFF;
+			groundMaterial.ambient = 1;
+			groundMaterial.lightPicker = _lightPicker;
+
+			// Earth geometry.
+			var ground:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), groundMaterial );
+			_earth.addChild( ground );
+
+			// Clouds material.
+			var skyBitmap:BitmapData = new BitmapData( 2048, 1024, true, 0xFFFFFFFF );
+			skyBitmap.copyChannel( Cast.bitmapData( SkyDiffuse ), skyBitmap.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA );
+			var cloudsMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( skyBitmap ) );
+			cloudsMaterial.alphaBlending = true;
+			cloudsMaterial.lightPicker = _lightPicker;
+			cloudsMaterial.specular = 0;
+			cloudsMaterial.ambientColor = 0x1b2048;
+			cloudsMaterial.ambient = 1;
+
+			// Clouds geometry.
+			var clouds:Mesh = new Mesh( new SphereGeometry( 102, 200, 100 ), cloudsMaterial );
+			_earth.addChild( clouds );
 		}
 
 		private function createSpace():void {
@@ -127,7 +170,7 @@ package li.materials.globe.src
 		}
 
 		private function rand( min:Number, max:Number ):Number {
-		    return (max - min)*Math.random() + min;
+			return (max - min) * Math.random() + min;
 		}
 	}
 }

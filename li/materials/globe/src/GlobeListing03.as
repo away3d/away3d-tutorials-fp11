@@ -5,14 +5,19 @@ package li.materials.globe.src
 	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
+	import away3d.materials.methods.FresnelSpecularMethod;
+	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
 	import away3d.textures.BitmapCubeTexture;
 	import away3d.utils.Cast;
 
+	import flash.display.BitmapData;
+	import flash.geom.ColorTransform;
+
 	import li.base.ListingBase;
 
-	public class GlobeListing02 extends ListingBase
+	public class GlobeListing03 extends ListingBase
 	{
 		// Diffuse map for globe.
 		[Embed(source="../../../../embeds/globe/land_ocean_ice_2048_match.jpg")]
@@ -25,6 +30,10 @@ package li.materials.globe.src
 		// Specular map for globe.
 		[Embed(source="../../../../embeds/globe/earth_specular_2048.jpg")]
 		public static var EarthSpecular:Class;
+
+		// Night diffuse map for globe.
+		[Embed(source="../../../../embeds/globe/land_lights_16384.jpg")]
+    	public static var EarthNight:Class;
 
 		// Skybox textures.
 		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
@@ -42,7 +51,7 @@ package li.materials.globe.src
 
 		private var _earth:Mesh;
 
-		public function GlobeListing02() {
+		public function GlobeListing03() {
 			super();
 		}
 
@@ -93,13 +102,22 @@ package li.materials.globe.src
 
 		private function createEarth():void {
 
+			// Fresnel specular method for earth.
+			var earthFresnelSpecular:FresnelSpecularMethod = new FresnelSpecularMethod(true);
+			earthFresnelSpecular.fresnelPower = 1;
+			earthFresnelSpecular.normalReflectance = 0.1;
+			earthFresnelSpecular.shadingModel = SpecularShadingModel.PHONG;
+
 			// Material.
 			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthDiffuse ) );
+			earthMaterial.specularMethod = earthFresnelSpecular;
 			earthMaterial.normalMap = Cast.bitmapTexture( EarthNormals );
 			earthMaterial.specularMap = Cast.bitmapTexture( EarthSpecular );
+			earthMaterial.ambientTexture = Cast.bitmapTexture( EarthNight );
 			earthMaterial.gloss = 5;
-			earthMaterial.specular = 0.75;
-			earthMaterial.ambient = 0.2;
+			earthMaterial.specular = 1;
+			earthMaterial.ambientColor = 0xFFFFFF;
+			earthMaterial.ambient = 1;
 			earthMaterial.lightPicker = _lightPicker;
 
 			// Geometry.

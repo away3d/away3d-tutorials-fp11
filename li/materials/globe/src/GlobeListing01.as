@@ -5,9 +5,7 @@ package li.materials.globe.src
 	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
-	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
-	import away3d.textures.BitmapCubeTexture;
 	import away3d.utils.Cast;
 
 	import li.base.ListingBase;
@@ -15,22 +13,8 @@ package li.materials.globe.src
 	public class GlobeListing01 extends ListingBase
 	{
 		// Diffuse map for globe.
-		[Embed(source="/../embeds/globe/land_ocean_ice_2048_match.jpg")]
+		[Embed(source="../../../../embeds/globe/land_ocean_ice_2048_match.jpg")]
 		public static var EarthDiffuse:Class;
-
-		// Skybox textures.
-		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
-		private var PosX:Class;
-		[Embed(source="../../../../embeds/skybox/space_negX.jpg")]
-		private var NegX:Class;
-		[Embed(source="../../../../embeds/skybox/space_posY.jpg")]
-		private var PosY:Class;
-		[Embed(source="../../../../embeds/skybox/space_negY.jpg")]
-		private var NegY:Class;
-		[Embed(source="../../../../embeds/skybox/space_posZ.jpg")]
-		private var PosZ:Class;
-		[Embed(source="../../../../embeds/skybox/space_negZ.jpg")]
-		private var NegZ:Class;
 
 		private var _earth:Mesh;
 
@@ -45,7 +29,26 @@ package li.materials.globe.src
 
 			createSun();
 			createEarth();
-			createSpace();
+			createStarField();
+		}
+
+		private function createStarField():void {
+			// Define geometry and material to be shared by all stars.
+			var starGeometry:SphereGeometry = new SphereGeometry( 5, 4, 3 );
+			var starMaterial:ColorMaterial = new ColorMaterial( 0xFFFFFF );
+			for( var i:uint = 0; i < 500; i++ ) {
+				// Define unique star mesh that uses shared stuff.
+				var starMesh:Mesh = new Mesh( starGeometry, starMaterial );
+				_view.scene.addChild( starMesh );
+				// Randomly position in spherical coordinates.
+				var radius:Number = rand( 500, 10000 );
+				var elevation:Number = rand( -Math.PI, Math.PI );
+				var azimuth:Number = rand( -Math.PI, Math.PI );
+				// Spherical to cartesian.
+				starMesh.x = radius * Math.cos( elevation ) * Math.sin( azimuth );
+				starMesh.y = radius * Math.sin( elevation );
+				starMesh.z = radius * Math.cos( elevation ) * Math.cos( azimuth );
+			}
 		}
 
 		private function createSun():void {
@@ -69,25 +72,17 @@ package li.materials.globe.src
 
 			// Geometry.
 			_earth = new Mesh( new SphereGeometry( 100, 200, 100 ), earthMaterial );
+			_earth.rotationY = rand( 0, 360 );
 			_view.scene.addChild( _earth );
-		}
-
-		private function createSpace():void {
-
-			// Cube texture.
-			var cubeTexture:BitmapCubeTexture = new BitmapCubeTexture(
-					Cast.bitmapData( PosX ), Cast.bitmapData( NegX ),
-					Cast.bitmapData( PosY ), Cast.bitmapData( NegY ),
-					Cast.bitmapData( PosZ ), Cast.bitmapData( NegZ ) );
-
-			// Skybox geometry.
-			var skyBox:SkyBox = new SkyBox( cubeTexture );
-			_view.scene.addChild( skyBox );
 		}
 
 		override protected function onUpdate():void {
 			super.onUpdate();
 			_earth.rotationY += 0.1;
+		}
+
+		private function rand( min:Number, max:Number ):Number {
+			return (max - min)*Math.random() + min;
 		}
 	}
 }

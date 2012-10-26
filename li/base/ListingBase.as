@@ -109,10 +109,10 @@ package li.base
 
 		private function stageMouseWheelHandler( event:MouseEvent ):void {
 			_cameraController.distance -= event.delta * 5;
-			if( _cameraController.distance < 200 )
-				_cameraController.distance = 200;
-			else if( _cameraController.distance > 1000 )
-				_cameraController.distance = 1000;
+			if( _cameraController.distance < 150 )
+				_cameraController.distance = 150;
+			else if( _cameraController.distance > 2000 )
+				_cameraController.distance = 2000;
 		}
 
 		private function stageMouseUpHandler( event:MouseEvent ):void {
