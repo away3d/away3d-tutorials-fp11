@@ -1,52 +1,175 @@
 <!DOCTYPE HTML>
 <html>
-<head>
+	<head>
+		<title>Away3D 4 Globe Tutorial</title>
+		<!-- AS3 Syntax Highlighter -->
+		<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
+		<link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
+		<script type="text/javascript">SyntaxHighlighter.all();</script>
+		<!-- shadow box -->
+		<link rel="stylesheet" type="text/css" href="http://away3d.com/static/shadowBox/shadowbox.css"/>
+		<script type="text/javascript" src="http://away3d.com/static/shadowBox/shadowbox.js"></script>
+		<script type="text/javascript">Shadowbox.init();</script>
+		<!-- Wiki base styles -->
+		<!--<link rel="stylesheet" href="http://away3d.com/themes/wiki_themes/away3d/wiki_styles.css" type="text/css" media="screen" title="Global Styles" charset="utf-8"/>-->
+		<!-- Styles for tutorials -->
+		<link type="text/css" rel="stylesheet" href="http://away3d.com/wikicontent/styles/tutorial.css"/>
+	</head>
+	<body>
+		[[Category:Tutorials::Materials]]
+		<article>
+			<section>
+				<h3>Introduction</h3>
 
-	<title>Away3D Globe Tutorial</title>
+				<p>Away3D is a powerful 3D engine that abstracts us from the flexible, yet raw Stage3D API. In just a few lines of code, we can
+					accomplish advanced scenes and let the engine take care of the complications under the hood. Such is the case for advanced material
+					use. In this tutorial we will take a quick tour along Away3D's material system in trying to emulate a simple scene depicting
+					our beautiful planet, floating ominously in deep space. We will start from simple geometry and material usage, and little by little
+					get more and more involved into the engine's powerful material system. So let's get going, we hope you enjoy the ride!</p>
+			</section>
+			<section>
+				<h3>Setting Up the Scene</h3>
 
-	<!-- AS3 Syntax Highlighter -->
-	<script type="text/javascript" src="../../../base/bin/highlight/scripts/shCore.js"></script>
-	<script type="text/javascript" src="../../../base/bin/highlight/scripts/shBrushAS3.js"></script>
-	<link type="text/css" rel="stylesheet" href="../../../base/bin/highlight/styles/shCoreDefault.css"/>
-	<script type="text/javascript">SyntaxHighlighter.all();</script>
+				<p>Alright, first things first, lets set up the geometries of the scene. We will use spheres to create the Earth and the Moon group them
+					appropriately in order to be able to simulate axis and orbit rotations, and texture them with basic materials. This is how it looks like in
+					listing 1:</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_01/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_01.jpg"></a>
+					<figcaption>
+						<p>Listing 1 ( click image to launch ). Basic Earth scene with grouped transforms and non-lit texture materials.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_01/src_01.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+				<p>For each celestial body, we've reproduced the same sequence of steps. We've created a
+					<span class="newTerm">texture</span>, a <span class="newTerm">geometry</span>,
+					wrapped them in a
+					<span class="newTerm">mesh</span> object, added it to a <span class="newTerm">container</span>
+					and added the container to the scene. Lets quickly review each of these steps.</p>
 
-	<!-- Styles -->
-	<link type="text/css" rel="stylesheet" href="../../../base/src/tutorial.css"/>
+				<h4>Materials:</h4>
 
-</head>
-<body>
+				<p>We are embedding jpg images and using Away3D's Cast utility class to create
+					<code>BitmapTexture</code> objects.
+					Note that these are not the regular Flash
+					<code>BitmapData</code> objects but special GPU image objects that Away3D will eventually upload to the GPU
+					via the Stage3D API. These are then used within a
+					<code>TextureMaterial</code>, which is the engine's main player in any material that makes use of
+					textures for shading. In this case, we've barely made use of this powerful material, but we will take much more advantage of it, as we will see shortly.
+				</p>
 
-<article>
+				<div class="preBox"><pre class="brush: as3">
+var moonSurfaceTexture:BitmapTexture = Cast.bitmapTexture( MoonSurfaceDiffuse );
+var moonSurfaceMaterial:TextureMaterial = new TextureMaterial( moonSurfaceTexture );
+    </pre>
+				</div>
+				<h4>Geometries:</h4>
 
-	<header>
-		<hgroup>
-			<h3>Away3D Globe Tutorial</h3>
-			<h4>Step by step construction of Earth, with Away3D 4.</h4>
-		</hgroup>
-	</header>
+				<p>The celestial bodies are represented by
+					<code>SphereGeometry</code> objects. A geometry object is mainly a buffer holder, keeping track of a potentially
+					large number of triangles. Such can represent a plane, a sphere as in this case, a torus or even much more realistic and complex objects such as a detailed car or avatar. Away3D
+					offers a basic set of
+					<span class="newTerm">primitive</span> geometries and in this case, we are using spheres with a significant level of detail, that is, with a pretty high poly
+					count or segmentation, to make sure we see perfectly rounded bodies.</p>
 
-	<aside>
-		<p>Contents:</p>
-		<span class="todo">todo</span>
-	</aside>
+				<div class="preBox"><pre class="brush: as3">
+var moonSurfaceGeometry:SphereGeometry = new SphereGeometry( 50, 100, 50 );
+    </pre>
+				</div>
+				<h4>Meshes:</h4>
 
-	<section>
+				<p>Geometries combined with materials conform mesh objects, which gather the necessary functionality for actual rendering. The geometry determines the objects shape, and
+					the material determines the object's
+					<span class="newTerm">shader</span>, or how it will be drawn to screen. Meshes also wrap in other objects, such as
+					<span class="newTerm">transforms</span></p>.
+				These are another essential part of the 3D rendering pipeline and allow us to position, scale and rotate our objects. Notice how we altered the x coordinate of the moon body.
+				<div class="preBox"><pre class="brush: as3">
+var moonSurfaceMesh:Mesh = new Mesh( moonSurfaceGeometry, moonSurfaceMaterial );
+    </pre>
+				</div>
+				<h4>Containers:</h4>
 
-		<h3>Introduction</h3>
+				<p>Another object that owns transforms is
+					<code>ObjectContainer3D</code>. These can also contain children. In our example, we are placing the objects within
+					containers so that it is easy to perform groupings and transformations on them. For example, by displacing the moon's position within its container, we can simulate its orbital
+					motion by simply rotating its parent container. These are the objects we finally add to the scene.
+				</p>
 
-		<p>Blah blah blah...</p>
-
-	</section>
-
-	<section>
-
-		<h3>Setup</h3>
-
-		<p>Blah blah blah...</p>
-
-	</section>
-
-</article>
-
-</body>
+				<div class="preBox"><pre class="brush: as3">
+_moon = new ObjectContainer3D();
+_moon.rotationY = rand( 0, 360 );
+_view.scene.addChild( _moon );
+moonSurfaceMesh.x = 1000;
+_moon.addChild( moonSurfaceMesh );
+    </pre>
+				</div>
+			</section>
+			<section>
+				<h3>Enriching the Scene</h3>
+				<p>Our scene still looks pretty bare and there are several aspects we could focus on to make it look cooler. One aspect is making the materials of our objects look better
+				but another one we will look at first is adding more objects to our scene to populate it with a bit of eye-candy. We will add a the Sun, some stars, and deep space
+					graphics to our scene. Lets look at the result, as done previously, and then
+				analyze what we've done.</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_02/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_02.jpg"></a>
+					<figcaption>
+						<p>Listing 2. The basic scene with Sprite3D's to represent the Sun and stars and a SkyBox to represent deep space.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_02/src_02.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+				<p>We've compacted the code from the last listing. As we advance in this tutorial, our code is going to get more and more involved, so we will want to
+				have previously studied elements in the source out of our current main focus. Our listing has three new methods, one that creates the sun, another that creates a starfield
+				and another one that creates our deep space graphics.</p>
+				<h4>Sprite3D</h4>
+				<p>The sun and the stars use the new kind of object <code>Sprite3D</code> instead of <code>Mesh</code>. These are objects that don't really have a geometry, but still own a
+				material. Their geometry is actually a plane that always looks at the camera. These are commonly known as <span class="newTerm">billboards</span> in the 3D world, and are
+				ideal to represent numerous far away objects or particles. They can be 'faked' with an image attached to them and that is exactly what we are doing here. Sprite3D's use much less
+				triangles than Meshes and are hence cheaper objects.</p>
+				<p>Notice the new method <code>blackToTransparent()</code>
+				This is simply a utility method that changes the black background of the images we are using on the billboards to transparent. The way we do this is by creating a new <code>BitmapData</code>
+				object and copying anything on the image's red channel ( anything that is not black ) to the alpha channel. We could have used any of the other channels since the images are pretty much
+				black and white, but the red channel will do. Once we have such transparent images, setting the material's <code>alphaBlending</code> property to true, will let the rendering pipeline
+				know that this object's texture is to be alpha-blended with whatever objects are behind it.</p>
+				<div class="preBox"><pre class="brush: as3">
+var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( StarTexture ) );
+var starMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
+starMaterial.alphaBlending = true;
+				</pre></div>
+				<p>The star field is layed out using a for loop that creates each billboard, spits out random spherical coordinates, calculates its cartesian coordinates equivalent and assigns
+				it to the position of each star. We used spherical coordinates here because they tend to be easier for laying out things in a spherical distribution. You can read more about
+				this system and its uses <a href="http://en.wikipedia.org/wiki/Spherical_coordinate_system">here</a>.</p>
+				<h4>SkyBox</h4>
+				<p>Another commonly used tricked we've used here is the <span class="newTerm">skybox</span>. This is simply an infinitely large and infinitely far away cube with iamges attached to
+				its inner faces, ideal for simulating environmental elements that are sufficiently far away to not require parallax or perspective effects. They are so far away, that moving
+				around won't actually make them look very different. For this, we embed 6 images, one for each face of the cube and wrap them around a <code>BitmapCubeTexture</code>, which is
+				another type of GPU texture for the Stage3D API and wrap this texture in turn in the <code>SkyBox</code> object itself. This is a simple resource, cheap and with excellent
+				visual contributions.</p>
+				<div class="preBox"><pre class="brush: as3">
+// Cube texture.
+var cubeTexture:BitmapCubeTexture = new BitmapCubeTexture(
+		Cast.bitmapData( PosX ), Cast.bitmapData( NegX ),
+		Cast.bitmapData( PosY ), Cast.bitmapData( NegY ),
+		Cast.bitmapData( PosZ ), Cast.bitmapData( NegZ ) );
+// Skybox geometry.
+var skyBox:SkyBox = new SkyBox( cubeTexture );
+_view.scene.addChild( skyBox );</pre></div>
+			</section>
+			<section>
+				<h3>Lights</h3>
+				<p>Great, now that we have sufficient objects in our scene to make it rich, its time to make or celestial bodies look a little more realisting. A fundamental
+				aspect that we have ignored so far is lights. Light sources and materials that make use of such lights make objects lighter on some areas and darker on others
+				depending on the configuration of the elements. This provides a powerful enhancement to our scene.</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_03/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_03.jpg"></a>
+					<figcaption>
+						<p>Listing 3. Usage of lights.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_03/src_03.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+			</section>
+		</article>
+	</body>
 </html>

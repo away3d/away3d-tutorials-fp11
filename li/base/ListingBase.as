@@ -69,6 +69,7 @@ package li.base
 			_view.width = WIDTH;
 			_view.height = HEIGHT;
 			_view.antiAlias = 4;
+			_view.camera.lens.far = 15000;
 			_view.addSourceURL( "srcview/index.html" );
 			_view.forceMouseMove = true;
 			addChild( _view );

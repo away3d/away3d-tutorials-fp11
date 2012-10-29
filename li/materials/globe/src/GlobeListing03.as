@@ -1,39 +1,32 @@
 package li.materials.globe.src
 {
 
+	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
+	import away3d.entities.Sprite3D;
 	import away3d.lights.PointLight;
-	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
-	import away3d.materials.methods.FresnelSpecularMethod;
-	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
 	import away3d.textures.BitmapCubeTexture;
+	import away3d.textures.BitmapTexture;
 	import away3d.utils.Cast;
 
 	import flash.display.BitmapData;
-	import flash.geom.ColorTransform;
+	import flash.display.BitmapDataChannel;
+	import flash.geom.Point;
 
 	import li.base.ListingBase;
 
 	public class GlobeListing03 extends ListingBase
 	{
-		// Diffuse map for globe.
-		[Embed(source="../../../../embeds/globe/land_ocean_ice_2048_match.jpg")]
-		public static var EarthDiffuse:Class;
+		// Diffuse map for the Earth's surface.
+		[Embed(source="../../../../embeds/solar/earth_surface_2048.jpg")]
+		public static var EarthSurfaceDiffuse:Class;
 
-		// Normal map for globe.
-		[Embed(source="../../../../embeds/globe/EarthNormal.png")]
-		public static var EarthNormals:Class;
-
-		// Specular map for globe.
-		[Embed(source="../../../../embeds/globe/earth_specular_2048.jpg")]
-		public static var EarthSpecular:Class;
-
-		// Night diffuse map for globe.
-		[Embed(source="../../../../embeds/globe/land_lights_16384.jpg")]
-    	public static var EarthNight:Class;
+		// Diffuse map for the Moon's surface.
+		[Embed(source="../../../../embeds/solar/moon_1024.jpg")]
+		public static var MoonSurfaceDiffuse:Class;
 
 		// Skybox textures.
 		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
@@ -49,91 +42,101 @@ package li.materials.globe.src
 		[Embed(source="../../../../embeds/skybox/space_negZ.jpg")]
 		private var NegZ:Class;
 
-		private var _earth:Mesh;
+		// Star texture.
+		[Embed(source="../../../../embeds/solar/star.jpg")]
+		private var StarTexture:Class;
+
+		// Sun texture.
+		[Embed(source="../../../../embeds/solar/sun.jpg")]
+		private var SunTexture:Class;
+
+		private var _earth:ObjectContainer3D;
+		private var _moon:ObjectContainer3D;
 
 		public function GlobeListing03() {
 			super();
 		}
 
 		override protected function onSetup():void {
-
-			// View settings.
-			_view.camera.lens.far = 12000;
-
 			createSun();
 			createEarth();
-			createSpace();
+			createMoon();
+			createDeepSpace();
 			createStarField();
 		}
 
-		private function createStarField():void {
-			// Define geometry and material to be shared by all stars.
-			var starGeometry:SphereGeometry = new SphereGeometry( 5, 4, 3 );
-			var starMaterial:ColorMaterial = new ColorMaterial( 0xFFFFFF );
-			for( var i:uint = 0; i < 500; i++ ) {
-				// Define unique star mesh that uses shared stuff.
-				var starMesh:Mesh = new Mesh( starGeometry, starMaterial );
-				_view.scene.addChild( starMesh );
-				// Randomly position in spherical coordinates.
-				var radius:Number = rand( 500, 10000 );
-				var elevation:Number = rand( -Math.PI, Math.PI );
-				var azimuth:Number = rand( -Math.PI, Math.PI );
-				// Spherical to cartesian.
-				starMesh.x = radius * Math.cos( elevation ) * Math.sin( azimuth );
-				starMesh.y = radius * Math.sin( elevation );
-				starMesh.z = radius * Math.cos( elevation ) * Math.cos( azimuth );
-			}
-		}
-
 		private function createSun():void {
-
 			// Light object.
 			var light:PointLight = new PointLight();
-			light.x = 10000;
+			light.ambient = 0.25;
 			light.diffuse = 2;
-			light.ambient = 1;
+			light.specular = 0.5;
 			_lightPicker.lights = [ light ];
-
+			// Material.
+			var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( SunTexture ) );
+			var sunMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
+			sunMaterial.alphaBlending = true;
 			// Geometry.
-			var sun:Mesh = new Mesh( new SphereGeometry( 500 ), new ColorMaterial( 0xFFFFFF ) );
-			sun.x = 10000;
+			var sun:Sprite3D = new Sprite3D( sunMaterial, 5000, 5000 );
+			sun.x = light.x = 10000;
 			_view.scene.addChild( sun );
 		}
 
 		private function createEarth():void {
-
-			// Fresnel specular method for earth.
-			var earthFresnelSpecular:FresnelSpecularMethod = new FresnelSpecularMethod(true);
-			earthFresnelSpecular.fresnelPower = 1;
-			earthFresnelSpecular.normalReflectance = 0.1;
-			earthFresnelSpecular.shadingModel = SpecularShadingModel.PHONG;
-
 			// Material.
-			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthDiffuse ) );
-			earthMaterial.specularMethod = earthFresnelSpecular;
-			earthMaterial.normalMap = Cast.bitmapTexture( EarthNormals );
-			earthMaterial.specularMap = Cast.bitmapTexture( EarthSpecular );
-			earthMaterial.ambientTexture = Cast.bitmapTexture( EarthNight );
+			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
 			earthMaterial.gloss = 5;
-			earthMaterial.specular = 1;
-			earthMaterial.ambientColor = 0xFFFFFF;
-			earthMaterial.ambient = 1;
 			earthMaterial.lightPicker = _lightPicker;
-
-			// Geometry.
-			_earth = new Mesh( new SphereGeometry( 100, 200, 100 ), earthMaterial );
+			// Container.
+			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
 			_view.scene.addChild( _earth );
+			// Surface geometry.
+			var earthSurface:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), earthMaterial );
+			_earth.addChild( earthSurface );
 		}
 
-		private function createSpace():void {
+		private function createMoon():void {
+			// Material.
+			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
+			moonMaterial.gloss = 5;
+			moonMaterial.lightPicker = _lightPicker;
+			// Container.
+			_moon = new ObjectContainer3D();
+			_moon.rotationY = rand( 0, 360 );
+			_view.scene.addChild( _moon );
+			// Surface geometry.
+			var moonSurface:Mesh = new Mesh( new SphereGeometry( 50, 200, 100 ), moonMaterial );
+			moonSurface.x = 1000;
+			_moon.addChild( moonSurface );
+		}
 
+		private function createStarField():void {
+			// Define material to be shared by all stars.
+			var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( StarTexture ) );
+			var starMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
+			starMaterial.alphaBlending = true;
+			for( var i:uint = 0; i < 500; i++ ) {
+				// Define unique star.
+				var star:Sprite3D = new Sprite3D( starMaterial, 150, 150 );
+				_view.scene.addChild( star );
+				// Randomly position in spherical coordinates.
+				var radius:Number = rand( 2000, 15000 );
+				var elevation:Number = rand( -Math.PI, Math.PI );
+				var azimuth:Number = rand( -Math.PI, Math.PI );
+				// Spherical to cartesian.
+				star.x = radius * Math.cos( elevation ) * Math.sin( azimuth );
+				star.y = radius * Math.sin( elevation );
+				star.z = radius * Math.cos( elevation ) * Math.cos( azimuth );
+			}
+		}
+
+		private function createDeepSpace():void {
 			// Cube texture.
 			var cubeTexture:BitmapCubeTexture = new BitmapCubeTexture(
 					Cast.bitmapData( PosX ), Cast.bitmapData( NegX ),
 					Cast.bitmapData( PosY ), Cast.bitmapData( NegY ),
 					Cast.bitmapData( PosZ ), Cast.bitmapData( NegZ ) );
-
 			// Skybox geometry.
 			var skyBox:SkyBox = new SkyBox( cubeTexture );
 			_view.scene.addChild( skyBox );
@@ -141,11 +144,18 @@ package li.materials.globe.src
 
 		override protected function onUpdate():void {
 			super.onUpdate();
-			_earth.rotationY += 0.1;
+			_earth.rotationY += 0.05;
+			_moon.rotationY -= 0.005;
 		}
 
 		private function rand( min:Number, max:Number ):Number {
 		    return (max - min)*Math.random() + min;
+		}
+
+		private function blackToTransparent( original:BitmapData ):BitmapData {
+			var bmd:BitmapData = new BitmapData( original.width, original.height, true, 0xFFFFFFFF );
+			bmd.copyChannel( original, bmd.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA );
+			return bmd;
 		}
 	}
 }

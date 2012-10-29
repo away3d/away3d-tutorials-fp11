@@ -24,23 +24,23 @@ package li.materials.globe.src
 	public class GlobeListing04 extends ListingBase
 	{
 		// Diffuse map for globe.
-		[Embed(source="../../../../embeds/globe/land_ocean_ice_2048_match.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_surface_2048.jpg")]
 		public static var EarthDiffuse:Class;
 
 		// Normal map for globe.
-		[Embed(source="../../../../embeds/globe/EarthNormal.png")]
+		[Embed(source="../../../../embeds/solar/earth_normal_2048.jpg")]
 		public static var EarthNormals:Class;
 
 		// Specular map for globe.
-		[Embed(source="../../../../embeds/globe/earth_specular_2048.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_specular_2048.jpg")]
 		public static var EarthSpecular:Class;
 
 		// Night diffuse map for globe.
-		[Embed(source="../../../../embeds/globe/land_lights_16384.jpg")]
+		[Embed(source="../../../../embeds/solar/land_lights_16384.jpg")]
 		public static var EarthNight:Class;
 
 		// Diffuse map for sky.
-		[Embed(source="../../../../embeds/globe/cloud_combined_2048.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_clouds_1024.png")]
 		public static var SkyDiffuse:Class;
 
 		// Skybox textures.

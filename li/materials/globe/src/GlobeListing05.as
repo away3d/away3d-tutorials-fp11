@@ -17,13 +17,9 @@ package li.materials.globe.src
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
 	import away3d.textures.BitmapCubeTexture;
-	import away3d.textures.BitmapTexture;
 	import away3d.utils.Cast;
 
-	import flash.display.BitmapData;
-	import flash.display.BitmapDataChannel;
 	import flash.display.BlendMode;
-	import flash.geom.Point;
 
 	import li.base.ListingBase;
 
@@ -32,23 +28,23 @@ package li.materials.globe.src
 	public class GlobeListing05 extends ListingBase
 	{
 		// Diffuse map for globe.
-		[Embed(source="../../../../embeds/globe/land_ocean_ice_2048_match.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_surface_2048.jpg")]
 		public static var EarthDiffuse:Class;
 
 		// Normal map for globe.
-		[Embed(source="../../../../embeds/globe/EarthNormal.png")]
+		[Embed(source="../../../../embeds/solar/earth_normal_2048.jpg")]
 		public static var EarthNormals:Class;
 
 		// Specular map for globe.
-		[Embed(source="../../../../embeds/globe/earth_specular_2048.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_specular_2048.jpg")]
 		public static var EarthSpecular:Class;
 
 		// Night diffuse map for globe.
-		[Embed(source="../../../../embeds/globe/land_lights_16384.jpg")]
+		[Embed(source="../../../../embeds/solar/land_lights_16384.jpg")]
 		public static var EarthNight:Class;
 
 		// Diffuse map for sky.
-		[Embed(source="../../../../embeds/globe/cloud_combined_2048.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_clouds_1024.png")]
 		public static var SkyDiffuse:Class;
 
 		// Skybox textures.
@@ -147,9 +143,7 @@ package li.materials.globe.src
 			_earth.addChild( ground );
 
 			// Clouds material.
-			var skyBitmap:BitmapData = new BitmapData( 2048, 1024, true, 0xFFFFFFFF );
-			skyBitmap.copyChannel( Cast.bitmapData( SkyDiffuse ), skyBitmap.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA );
-			var cloudsMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( skyBitmap ) );
+			var cloudsMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( SkyDiffuse ) );
 			cloudsMaterial.alphaBlending = true;
 			cloudsMaterial.lightPicker = _lightPicker;
 			cloudsMaterial.specular = 0;
