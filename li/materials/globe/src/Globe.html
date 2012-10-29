@@ -158,9 +158,9 @@ _view.scene.addChild( skyBox );</pre></div>
 			</section>
 			<section>
 				<h3>Lights</h3>
-				<p>Great, now that we have sufficient objects in our scene to make it rich, its time to make or celestial bodies look a little more realisting. A fundamental
-				aspect that we have ignored so far is lights. Light sources and materials that make use of such lights make objects lighter on some areas and darker on others
-				depending on the configuration of the elements. This provides a powerful enhancement to our scene.</p>
+				<p>Great, now that we have sufficient objects in our scene to make it a bit richer, its time to make or celestial bodies look a little more realistic. A fundamental
+				aspect that we have ignored so far is lighting. Light sources and materials that make use of such lights make objects lighter on some areas and darker on others
+				depending on the configuration of the elements. This provides a powerful enhancement to our scene. Let's see how it looks like when applied.</p>
 				<figure>
 					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_03/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_03.jpg"></a>
 					<figcaption>
@@ -169,6 +169,27 @@ _view.scene.addChild( skyBox );</pre></div>
 						</p>
 					</figcaption>
 				</figure>
+				<p>We haven't changed much in this listing, just added a <span class="newTerm">point light</span>, adjusted some settings on such light and the materials, and associated
+				the lights with the material's <code>LightPicker</code>. There are different types of lights in Away3D <code>PointLight</code> being one of them. This represents
+				a light source that emanates light from a point in all directions, oposing other types of lights like <code>DirectionalLight</code> which emanates light from no
+				particular point in a single direction. Each type produces a different effect. In our case, we've used a point light and placed it at the same position of our sun sprite.
+				We've also placed this light in an array and assigned it to our listing's <code>StaticLightPicker</code>. A <span class="newTerm">light picker</span> is simply
+				an object used to group and collect lights in a scene. Consecutively, this light picker is assigned to each of the materials that want to be illuminated. In this case we've applied it
+				to texture materials but the same thing can be done to other types of materials such as color materials. Under the hood, the result is that Away3D produces a phong shader model to
+				illuminate the affected objects.</p>
+				<h4>Phong Shading</h4>
+				<p>Shading via Stage3D uses a rather complicated shading language called AGAL. It looks almost like assembler and is quite hard to deal with. It allows us to produce shader
+				programs which can be uploaded to the GPU and, together with geometries, textures, transforms, etc, define how things are drawn to screen. Fortunately, Away3D wraps all
+				these complexities into an intuitive material system where we can control shading models simply by manipulating parameters. In this case, we've touched on the light source's
+				ambient, diffuse and specular values and the materials' gloss values. The ambient property of the light illuminates objects from no specific origin or direction, simulating
+				a scene's random reflectance with no specifically directed shading. In this case, we've set it to 1 so that the dark side of our celestial bodies are not completely in
+				darkness. The diffuse property affects the amount in which incident light on the geometry's normals illuminates it. We've set it to 2 to exaggerate the difference between the lit
+				areas and the ones in darkness. The specular property of the light affects how much the reflecting highlight depending on the incident direction of the light, the surface
+				normals and the view angle light the surface. Finally, the gloss property of the material determines how spread out the specular highlight is. Try different values for each,
+				you'll get a better glimpse of what each does if you do so. Or if you want to dwell deeper into the fantastic world of shading, <a href="http://nehe.gamedev.net/article/glsl_an_introduction/25007/">this</a>
+				is a good place to start. It's GLSL instead of AGAL, but the concepts are what matter.</p>
+				<p>One thing to note and that is sometimes confusing is that materials, as lights, share some of the ambient, diffuse and specular properties. These values get combined in the
+				shader so you can have, for instance, different ambient illumination on a set of objects affected by the same light source.</p>
 			</section>
 		</article>
 	</body>
