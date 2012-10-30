@@ -288,7 +288,12 @@ earthCloudMaterial.specular = 0;</pre></div>
 			</section>
 			<section>
 				<h3>Adding an Atmosphere</h3>
-				<p>Our next feature will be a bit more involved with Away3D's material system.</p>
+				<p>Let's continue with the simulation of our atmosphere. This time, we're going to try to simulate a thin layer of gases around the Earth's surface.
+					We're going to do this by using a similar trick to the one we used for the clouds. That is, a slightly larger sphere, tweaked to generate the desired effect. In this
+				case, we won't be mapping a texture onto it, we just want a fading bluish color, so we're going to use a <code>ColorMaterial</code> this time. We could make this material
+				slightly transparent, but it would be on top of everything we've done so far, hence making everything bluish and obscuring a lot of detail we've been so laboriously working
+				on so far. We just want this sphere to be visible on the perimetry of the globe, not covering it. To do this, we use another trick; inverting the sphere. Let's first see
+				the results and then discuss them.</p>
 				<figure>
 					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_07/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_07.jpg"></a>
 					<figcaption>
@@ -297,15 +302,74 @@ earthCloudMaterial.specular = 0;</pre></div>
 						</p>
 					</figcaption>
 				</figure>
+				<p>The bit of code that inverts the sphere is:</p>
+				<div class="preBox"><pre class="brush: as3">earthAtmosphere.scaleX = -1;</pre></div>
+				<p>We could have inverted any of the 2 other axis, but having arbitrarily chosen the X axis, the result is the same; the sphere's normals point into it's center instead
+				of away from it. As a result the faces that would be normally pointing towards us, i.e. on top of the Earth's surface, are clipped by <span class="newTerm">back face culling</span>,
+				and the ones that would normally be clipped are visible. Hence we see only triangles that are on the opposite hemisphere and not occluded by the other spheres. Exactly what
+				we were looking for.</p>
+				<p>The construction of the material is very simple. Two things to note here tho. First, we are applying lighting to the sphere so we don't see the atmosphere on the dark face
+				of the planet, and secondly, we use <code>BlendMode.ADD</code> on it. This blend mode is ideal because it simply adds color to whatever is rendered behind the material but never
+				subtracts it. It will allow lighter things behind it to pass, but will not occlude them whenever the material is darker.</p>
+				<div class="preBox"><pre class="brush: as3">var atmosphereMaterial:ColorMaterial = new ColorMaterial( 0x1671cc );
+			atmosphereMaterial.blendMode = BlendMode.ADD;
+			atmosphereMaterial.lightPicker = _lightPicker;
+			atmosphereMaterial.gloss = 5;</pre></div>
+				<p>Right. This is sort of what we wanted, but it doesn't look to good does it? The results makes the atmosphere a bit to rough on the edges. Lets see how we can improve this in
+					the next section.</p>
 			</section>
 			<section>
 				<h3>A More Advanced Atmosphere</h3>
-				<p>...</p>
+				<p>In order to make our atmosphere more realistic, we need to make it fade out radially from the center of the sphere. In reality, the atmosphere's gases are denser
+				nearer to the surface of the planet, and gradually become less dense as the distance from the surface increases. This is a pretty particular requirement we will be making
+				to our <code>ColorMaterial</code> so, in order to implement it, we are going to need to go to a lower, more involved level of Away3D's material system. Let's see the results
+				first and then discuss them, as usual.</p>
 				<figure>
 					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_08/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_08.jpg"></a>
 					<figcaption>
 						<p>Listing 8.
 							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_08/src_08.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+				<p>The main part of the code is the usage of <code>CompositeDiffuseMethod</code>, and its related modulation function. This object is simply a base diffuse methods
+					that exposes a bit of its shader code so that we can alter it. It
+				exposes such part of its shader code by allowing us to define and pass a method with the following signature:</p>
+				<div class="preBox"><pre class="brush: as3">function myModulatingMethod( vo:MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache ):String</pre></div>
+				<p>Basically, we receive information on previous parts of the shader, and are expected to return this bit we are altering. The <code>MethodVO</code> gives us
+				information or properties of the shader program we are working on ( the current state of the material we are using ), the <code>ShaderRegisterElement</code> that represents
+				the state of the shader as we receive it, and a <code>ShaderRegisterCache</code> in case we want to use additional registers. Unfortunately, this requires
+				quite a bit of knowledge on writing shaders and specifically writing AGAL shaders. If you are not familiar with this, you will be more familiar with this part of the
+				tutorial once you've made a little research on these topics. Even if you are not familiar with these things, read on, you should still be able to understand what is
+					going on at a conceptual level at least.</p>
+				<div class="preBox"><pre class="brush: as3">private function modulateDiffuseMethod( vo:MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache ):String {
+var viewDirFragmentReg:ShaderRegisterElement = _atmosphereDiffuseMethod.viewDirFragmentReg;
+var normalFragmentReg:ShaderRegisterElement = _atmosphereDiffuseMethod.normalFragmentReg;
+var temp:ShaderRegisterElement = regCache.getFreeFragmentSingleTemp();
+regCache.addFragmentTempUsages( temp, 1 );
+var code:String = "dp3 " + temp + ", " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
+		"mul " + temp + ", " + temp + ", " + temp + "\n" +
+		"mul " + t + ".w, " + t + ".w, " + temp + "\n";
+regCache.removeFragmentTempUsage( temp );
+return code;
+}</pre></div>
+				<p>First, we ask the register cache for a temporary register onto which we store the projection of the current fragment to the viewer vector onto the normal vector of the fragment.
+					This value is then squared. Such projection will be larger as the view and normal vectors become aligned and smaller
+				as they tend to be perpendicular to each other. If we think about the normals of our sphere, such projection will be larger near the center, and smaller near the edges
+				of the sphere, to completely zero at the edges of it. We then multiply this value by the w component of our incoming t registry element which contains diffuse lighting
+					intensity depending on the position of the light and the surface normal, hence taking into account the previously calculated diffuse phong shading. By storing the
+					result in the w component of such register,
+					we are affecting the alpha component of the current
+				color, hence making areas near the edge of the sphere more transparent. Exactly what we wanted.</p>
+			</section>
+			<section>
+				<h3>Post Processing</h3>
+				<p>todo...</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_09/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_09.jpg"></a>
+					<figcaption>
+						<p>Listing 9.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_09/src_09.html" target="_blank">Full source code.</a>
 						</p>
 					</figcaption>
 				</figure>

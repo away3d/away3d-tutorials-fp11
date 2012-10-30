@@ -127,9 +127,7 @@ package li.materials.globe.src
 			var atmosphereMaterial:ColorMaterial = new ColorMaterial( 0x1671cc );
 			atmosphereMaterial.blendMode = BlendMode.ADD;
 			atmosphereMaterial.lightPicker = _lightPicker;
-			atmosphereMaterial.specular = 0.5;
 			atmosphereMaterial.gloss = 5;
-			atmosphereMaterial.ambient = 1;
 			// Container.
 			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );

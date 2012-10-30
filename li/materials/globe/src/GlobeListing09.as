@@ -5,16 +5,15 @@ package li.materials.globe.src
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.entities.Sprite3D;
+	import away3d.filters.BloomFilter3D;
 	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
 	import away3d.materials.methods.CompositeDiffuseMethod;
-	import away3d.materials.methods.CompositeSpecularMethod;
 	import away3d.materials.methods.FresnelSpecularMethod;
 	import away3d.materials.methods.MethodVO;
 	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.materials.utils.ShaderRegisterCache;
-	import away3d.materials.utils.ShaderRegisterElement;
 	import away3d.materials.utils.ShaderRegisterElement;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
@@ -22,16 +21,18 @@ package li.materials.globe.src
 	import away3d.textures.BitmapTexture;
 	import away3d.utils.Cast;
 
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BitmapDataChannel;
 	import flash.display.BlendMode;
 	import flash.geom.Point;
+	import flash.geom.Vector3D;
 
 	import li.base.ListingBase;
 
 	use namespace arcane;
 
-	public class GlobeListing08 extends ListingBase
+	public class GlobeListing09 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -79,11 +80,42 @@ package li.materials.globe.src
 		[Embed(source="../../../../embeds/solar/sun.jpg")]
 		private var SunTexture:Class;
 
+		// Lens flare.
+		[Embed(source="../../../../embeds/lensflare/flare0.jpg")]
+		private var Flare0:Class;
+		[Embed(source="../../../../embeds/lensflare/flare1.jpg")]
+		private var Flare1:Class;
+		[Embed(source="../../../../embeds/lensflare/flare2.jpg")]
+		private var Flare2:Class;
+		[Embed(source="../../../../embeds/lensflare/flare3.jpg")]
+		private var Flare3:Class;
+		[Embed(source="../../../../embeds/lensflare/flare4.jpg")]
+		private var Flare4:Class;
+		[Embed(source="../../../../embeds/lensflare/flare5.jpg")]
+		private var Flare5:Class;
+		[Embed(source="../../../../embeds/lensflare/flare6.jpg")]
+		private var Flare6:Class;
+		[Embed(source="../../../../embeds/lensflare/flare7.jpg")]
+		private var Flare7:Class;
+		[Embed(source="../../../../embeds/lensflare/flare8.jpg")]
+		private var Flare8:Class;
+		[Embed(source="../../../../embeds/lensflare/flare9.jpg")]
+		private var Flare9:Class;
+		[Embed(source="../../../../embeds/lensflare/flare10.jpg")]
+		private var Flare10:Class;
+		[Embed(source="../../../../embeds/lensflare/flare11.jpg")]
+		private var Flare11:Class;
+		[Embed(source="../../../../embeds/lensflare/flare12.jpg")]
+		private var Flare12:Class;
+
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
+		private var _sun:Sprite3D;
 		private var _atmosphereDiffuseMethod:CompositeDiffuseMethod;
+		private var _bloomFilter:BloomFilter3D;
+		private var flares:Vector.<FlareObject> = new Vector.<FlareObject>();
 
-		public function GlobeListing08() {
+		public function GlobeListing09() {
 			super();
 		}
 
@@ -105,9 +137,24 @@ package li.materials.globe.src
 			var sunMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
 			sunMaterial.alphaBlending = true;
 			// Geometry.
-			var sun:Sprite3D = new Sprite3D( sunMaterial, 5000, 5000 );
-			sun.x = light.x = 10000;
-			_view.scene.addChild( sun );
+			_sun = new Sprite3D( sunMaterial, 5000, 5000 );
+			_sun.x = light.x = 10000;
+			_view.scene.addChild( _sun );
+			// Bloom effect.
+			_bloomFilter = new BloomFilter3D( 2, 2, 0.5, 0, 4 );
+			_view.filters3d = [ _bloomFilter ];
+			flares.push(new FlareObject(new Flare10(),  3.2, -0.01, 147.9));
+			flares.push(new FlareObject(new Flare11(),  6,    0,     30.6));
+			flares.push(new FlareObject(new Flare7(),   2,    0,     25.5));
+			flares.push(new FlareObject(new Flare7(),   4,    0,     17.85));
+			flares.push(new FlareObject(new Flare12(),  0.4,  0.32,  22.95));
+			flares.push(new FlareObject(new Flare6(),   1,    0.68,  20.4));
+			flares.push(new FlareObject(new Flare2(),   1.25, 1.1,   48.45));
+			flares.push(new FlareObject(new Flare3(),   1.75, 1.37,   7.65));
+			flares.push(new FlareObject(new Flare4(),   2.75, 1.85,  12.75));
+			flares.push(new FlareObject(new Flare8(),   0.5,  2.21,  33.15));
+			flares.push(new FlareObject(new Flare6(),   4,    2.5,   10.4));
+			flares.push(new FlareObject(new Flare7(),   10,   2.66,  50));
 		}
 
 		private function createEarth():void {
@@ -222,8 +269,50 @@ package li.materials.globe.src
 
 		override protected function onUpdate():void {
 			super.onUpdate();
+			updateBloom();
+			updateFlares();
 			_earth.rotationY += 0.05;
 			_moon.rotationY -= 0.005;
+		}
+
+		private function updateBloom():void {
+			var pos:Vector3D = _view.camera.position.clone();
+			pos.normalize();
+			var proj:Number = -pos.dotProduct( Vector3D.X_AXIS );
+			if( proj < 0 ) proj = 0;
+			proj = Math.pow( proj, 12 );
+			_bloomFilter.exposure = 5 * proj;
+			_sun.scaleX = _sun.scaleY = _sun.scaleZ = 1 + proj;
+		}
+
+		private var flareVisible:Boolean;
+
+		private function updateFlares():void {
+			var flareVisibleOld:Boolean = flareVisible;
+			var sunScreenPosition:Vector3D = _view.project( _sun.scenePosition );
+			var xOffset:Number = sunScreenPosition.x - _view.width / 2;
+			var yOffset:Number = sunScreenPosition.y - _view.height / 2;
+			var earthScreenPosition:Vector3D = _view.project( _earth.scenePosition );
+			var earthRadius:Number = 100 * _view.height / earthScreenPosition.z;
+			var flareObject:FlareObject;
+			flareVisible = (sunScreenPosition.x > 0 && sunScreenPosition.x < _view.width && sunScreenPosition.y > 0 && sunScreenPosition.y < _view.height && sunScreenPosition.z > 0 && Math.sqrt( xOffset * xOffset + yOffset * yOffset ) > earthRadius) ? true : false;
+			//update flare visibility
+			if( flareVisible != flareVisibleOld ) {
+				for each ( flareObject in flares ) {
+					if( flareVisible )
+						addChild( flareObject.sprite );
+					else
+						removeChild( flareObject.sprite );
+				}
+			}
+			//update flare position
+			if( flareVisible ) {
+				var flareDirection:Point = new Point( xOffset, yOffset );
+				for each ( flareObject in flares ) {
+					flareObject.sprite.x = sunScreenPosition.x - flareDirection.x * flareObject.position - flareObject.sprite.width / 2;
+					flareObject.sprite.y = sunScreenPosition.y - flareDirection.y * flareObject.position - flareObject.sprite.height / 2;
+				}
+			}
 		}
 
 		private function rand( min:Number, max:Number ):Number {
@@ -235,5 +324,38 @@ package li.materials.globe.src
 			bmd.copyChannel( original, bmd.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA );
 			return bmd;
 		}
+	}
+}
+
+import flash.display.Bitmap;
+import flash.display.BitmapData;
+import flash.display.BitmapDataChannel;
+import flash.geom.Point;
+
+class FlareObject
+{
+	private var flareSize:Number = 144;
+
+	public var sprite:Bitmap;
+
+	public var size:Number;
+
+	public var position:Number;
+
+	public var opacity:Number;
+
+	/**
+	 * Constructor
+	 */
+	public function FlareObject(sprite:Bitmap, size:Number, position:Number, opacity:Number)
+	{
+		this.sprite = new Bitmap(new BitmapData(sprite.bitmapData.width, sprite.bitmapData.height, true, 0xFFFFFFFF));
+		this.sprite.bitmapData.copyChannel(sprite.bitmapData, sprite.bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
+		this.sprite.alpha = opacity/100;
+		this.sprite.smoothing = true;
+		this.sprite.scaleX = this.sprite.scaleY = size*flareSize/sprite.width;
+		this.size = size;
+		this.position = position;
+		this.opacity = opacity;
 	}
 }
