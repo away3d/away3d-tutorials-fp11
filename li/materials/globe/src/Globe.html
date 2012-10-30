@@ -191,6 +191,125 @@ _view.scene.addChild( skyBox );</pre></div>
 				<p>One thing to note and that is sometimes confusing is that materials, as lights, share some of the ambient, diffuse and specular properties. These values get combined in the
 				shader so you can have, for instance, different ambient illumination on a set of objects affected by the same light source.</p>
 			</section>
+			<section>
+				<h3>Additional Maps</h3>
+				<p>Lighting did improve the look of our celestial bodies, but there is still a lot more we can do to enhance them. <code>TextureMaterial</code> accepts more than one
+				texture or <span class="newTerm">map</span>. In fact, we will be applying 3 more maps on it; a normal map, a specular map and an ambient map. Here they are, including the
+					map we already used:</p>
+				<figure>
+					<img class="staticFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/earth_diffuse.jpg" style="clear: right;">
+					<img class="staticFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/earth_normals.png" style="clear: right;">
+					<img class="staticFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/earth_specular.jpg" style="clear: right;">
+					<img class="staticFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/earth_ambient.jpg" style="clear: right;">
+					<figcaption><p>Figure 1. Multiple maps used for shading of the globe. In order, diffuse map, normal map, specular map and ambient map.</p></figcaption>
+				</figure>
+				<p><code>TextureMaterial</code> is able to use these maps for more advanced use of illumination. Lets start by the specular map, which is the easiest to understand.
+				This map simply acts as a sort of mask for the specular highlight of the material. Wherever the map is white, the specular highlight is allowed to be,
+				wherever it is black, it is not. Values in between attenuate the highlight. The ambient map is used as a sort of diffuse map wherever no light reaches the geometry. In
+				our case, it will 'paint' the dark side of the Earth since it doesn't receive any lighting from the light source at the position of the Sun. The normal map is a little
+				more involved and produces the illusion of having a higher poly count on our model. A <code>SphereGeometry</code> has normals at each vertex and the shader uses each of these
+				normals for determining the diffuse and specular components of the globe's illumination. In fact, the shader interpolates these normals for every 'pixel' or <span class="newTerm">fragment</span>
+				within each triangle producing a very large number of normals, all pointing away from the center of the sphere. This map encodes how much these normals deviate from their
+				original directions by representing the deviations in x, y and z in the red, green and blue color components. This gives a lot more illumination information to the globe when lit
+				while not adding any triangles whatsoever. Lets see the result of using all these maps together. Notice how specular highlights occur only in the oceanic areas, how the dark side
+				of the planet shows city night lights and how normal mapping appears to shade the terrain, while not actually adding terrain detail near the edges of the sphere.</p>
+				<p>The following listing implements these maps.</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_04/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_04.jpg"></a>
+					<figcaption>
+						<p>Listing 4. Usage of additional maps for shading of the Earth.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_04/src_04.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+				<p>As you can see, these rather advanced shading topics are absurdly easily implemented on Away3D. The most significant change in the listing is the addition of the
+				following lines, which simply assign the mentioned maps into the Earth's <code>TextureMaterial</code>:</p>
+				<div class="preBox"><pre class="brush: as3">
+earthMaterial.normalMap = Cast.bitmapTexture( EarthSurfaceNormals );
+earthMaterial.specularMap = Cast.bitmapTexture( EarthSurfaceSpecular );
+earthMaterial.ambientTexture = Cast.bitmapTexture( EarthSurfaceNight );</pre></div>
+				<p>Additionally, notice that we have tweaked illumination values of each of the bodies independently, in order to achieve the desired aspect of each one.</p>
+			</section>
+			<section>
+				<h3>Fresnel Specular Method</h3>
+				<p>To be honest, our specular highlights on the celestial bodies don't look very realistic. They do make things look more interesting, but they would truly be more
+				appropriate for billiard balls than for planets. Planets aren't that shiny. Also notice an undesired specular highlight trail off when looking at the bodies from
+				behind the light. Lets change the way our <code>TextureMaterial</code> deals with specular highlights. In fact, lets tell it to use a completely different
+				<code>specularMethod</code>. Away3D materials allow you to composite a material using <span class="newTerm">methods</span>. For instance, you can change the <code>ambient</code>
+				<code>diffuse</code> and <code>specular</code> methods of a <code>TextureMaterial</code>. You can think of methods as being interchangeable chunks of shader code which the engine
+				combines to produce a shader program. This gives you an amazing range of shading possibilities with an impossibly simple ease of use.</p>
+				<p>To improve our highlights, we will use a <code>FresnelSpecularMethod</code>. This is actually an illumination technique that sounds very complicated but is very simple. The concept is
+				as follows: If the viewer is looking down on the surface producing the specular highlights, they're weak. If instead he is aligned with the surface and looking at it edge on,
+				the highlights are strong. Imagine looking at a pool of water on a sunny day. If you stand by the pool and look straight down, you will see little light reflected plus
+				you will be able to see the bottom of the pool. If instead you're in the pool and looking at the water with the sun in the background, you will see little of the pool's bottom
+				and see much more light directly reflected from the sun on the surface of the water. Implementing this on our example produces subtle results, but eliminates the desired effects
+				we discussed before, producing a more realistic simulation.</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_05/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_05.jpg"></a>
+					<figcaption>
+						<p>Listing 5. Fresnel specular method implemented on the surface of the Earth and the Moon.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_05/src_05.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+				<p>Once again, the implementation in code is very simple. We simply initialize <code>FresnelSpecularMethod</code> objects and assign them to the materials of the
+				Earth and the Moon.</p>
+				<div class="preBox"><pre class="brush: as3">
+var earthFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
+earthFresnelSpecularMethod.fresnelPower = 1;
+earthFresnelSpecularMethod.normalReflectance = 0.1;
+earthFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
+//...
+earthMaterial.specularMethod = earthFresnelSpecularMethod;</pre></div>
+			</section>
+			<section>
+				<h3>Adding Clouds</h3>
+				<p>The planet Earth contains a rich atmosphere and our simulation would become so much richer if we included it. We will do this first by adding a slightly bigger
+				transparent sphere to the earth container with a clouds texture. The implementation is naive, but impressively effective:</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_06/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_06.jpg"></a>
+					<figcaption>
+						<p>Listing 6. Representing clouds using a slightly larger, transparent sphere.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_06/src_06.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+				<p>You may be asking yourself why didn't we merge the earth surface and sky diffuse maps, or even layer the materials in some way? This would definitely save us a lot of triangles since
+				using a new sphere certainly adds a lot of them. Well, we can afford them, plus, if we merged the maps together, the additional maps we added to the surface would affect the clouds,
+				and this would definitely be unwanted. Instead, we give it its own geometry and material and completely ignore specular highlights on the clouds by setting its specular property to
+				zero.</p>
+				<div class="preBox"><pre class="brush: as3">
+var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( EarthSkyDiffuse ) );
+var earthCloudMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
+earthCloudMaterial.alphaBlending = true;
+earthCloudMaterial.lightPicker = _lightPicker;
+earthCloudMaterial.specular = 0;</pre></div>
+			<p>Cool! This is starting to look real.</p>
+			</section>
+			<section>
+				<h3>Adding an Atmosphere</h3>
+				<p>Our next feature will be a bit more involved with Away3D's material system.</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_07/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_07.jpg"></a>
+					<figcaption>
+						<p>Listing 7.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_07/src_07.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+			</section>
+			<section>
+				<h3>A More Advanced Atmosphere</h3>
+				<p>...</p>
+				<figure>
+					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_08/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_08.jpg"></a>
+					<figcaption>
+						<p>Listing 8.
+							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_08/src_08.html" target="_blank">Full source code.</a>
+						</p>
+					</figcaption>
+				</figure>
+			</section>
 		</article>
 	</body>
 </html>

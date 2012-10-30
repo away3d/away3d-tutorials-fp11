@@ -1,11 +1,15 @@
 package li.materials.globe.src
 {
 
+	import away3d.arcane;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.entities.Sprite3D;
 	import away3d.lights.PointLight;
+	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
+	import away3d.materials.methods.FresnelSpecularMethod;
+	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
 	import away3d.textures.BitmapCubeTexture;
@@ -14,11 +18,14 @@ package li.materials.globe.src
 
 	import flash.display.BitmapData;
 	import flash.display.BitmapDataChannel;
+	import flash.display.BlendMode;
 	import flash.geom.Point;
 
 	import li.base.ListingBase;
 
-	public class GlobeListing04 extends ListingBase
+	use namespace arcane;
+
+	public class GlobeListing07 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -39,6 +46,10 @@ package li.materials.globe.src
 		// Night diffuse map for globe.
 		[Embed(source="../../../../embeds/solar/earth_ambient.jpg")]
 		public static var EarthSurfaceNight:Class;
+
+		// Diffuse map for clouds.
+		[Embed(source="../../../../embeds/solar/earth_clouds.jpg")]
+		public static var EarthSkyDiffuse:Class;
 
 		// Skybox textures.
 		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
@@ -65,7 +76,7 @@ package li.materials.globe.src
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
 
-		public function GlobeListing04() {
+		public function GlobeListing07() {
 			super();
 		}
 
@@ -93,25 +104,57 @@ package li.materials.globe.src
 		}
 
 		private function createEarth():void {
-			// Material.
-			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
-			earthMaterial.normalMap = Cast.bitmapTexture( EarthSurfaceNormals );
-			earthMaterial.specularMap = Cast.bitmapTexture( EarthSurfaceSpecular );
-			earthMaterial.ambientTexture = Cast.bitmapTexture( EarthSurfaceNight );
-			earthMaterial.gloss = 5;
-			earthMaterial.lightPicker = _lightPicker;
+			// Fresnel specular method for earth surface.
+			var earthFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
+			earthFresnelSpecularMethod.fresnelPower = 1;
+			earthFresnelSpecularMethod.normalReflectance = 0.1;
+			earthFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
+			// Material for earth surface.
+			var earthSurfaceMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
+			earthSurfaceMaterial.specularMethod = earthFresnelSpecularMethod;
+			earthSurfaceMaterial.normalMap = Cast.bitmapTexture( EarthSurfaceNormals );
+			earthSurfaceMaterial.specularMap = Cast.bitmapTexture( EarthSurfaceSpecular );
+			earthSurfaceMaterial.ambientTexture = Cast.bitmapTexture( EarthSurfaceNight );
+			earthSurfaceMaterial.gloss = 5;
+			earthSurfaceMaterial.lightPicker = _lightPicker;
+			// Material for sky.
+			var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( EarthSkyDiffuse ) );
+			var earthCloudMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
+			earthCloudMaterial.alphaBlending = true;
+			earthCloudMaterial.lightPicker = _lightPicker;
+			earthCloudMaterial.specular = 0;
+			// Material for atmosphere.
+			var atmosphereMaterial:ColorMaterial = new ColorMaterial( 0x1671cc );
+			atmosphereMaterial.blendMode = BlendMode.ADD;
+			atmosphereMaterial.lightPicker = _lightPicker;
+			atmosphereMaterial.specular = 0.5;
+			atmosphereMaterial.gloss = 5;
+			atmosphereMaterial.ambient = 1;
 			// Container.
 			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
 			_view.scene.addChild( _earth );
-			// Surface geometry.
-			var earthSurface:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), earthMaterial );
+			// Earth surface geometry.
+			var earthSurface:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), earthSurfaceMaterial );
 			_earth.addChild( earthSurface );
+			// Earth cloud geometry.
+			var earthSky:Mesh = new Mesh( new SphereGeometry( 102, 200, 100 ), earthCloudMaterial );
+			_earth.addChild( earthSky );
+			// Earth atmosphere geometry.
+			var earthAtmosphere:Mesh = new Mesh( new SphereGeometry( 110, 200, 100 ), atmosphereMaterial );
+			earthAtmosphere.scaleX = -1;
+			_earth.addChild( earthAtmosphere );
 		}
 
 		private function createMoon():void {
+			// Fresnel specular method for moon.
+			var moonFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
+			moonFresnelSpecularMethod.fresnelPower = 1;
+			moonFresnelSpecularMethod.normalReflectance = 0.1;
+			moonFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
 			// Material.
 			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
+			moonMaterial.specularMethod = moonFresnelSpecularMethod;
 			moonMaterial.gloss = 5;
 			moonMaterial.ambient = 0.25;
 			moonMaterial.specular = 0.5;

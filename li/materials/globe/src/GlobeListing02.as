@@ -20,11 +20,11 @@ package li.materials.globe.src
 	public class GlobeListing02 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
-		[Embed(source="../../../../embeds/solar/earth_surface_2048.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
 		public static var EarthSurfaceDiffuse:Class;
 
 		// Diffuse map for the Moon's surface.
-		[Embed(source="../../../../embeds/solar/moon_1024.jpg")]
+		[Embed(source="../../../../embeds/solar/moon.jpg")]
 		public static var MoonSurfaceDiffuse:Class;
 
 		// Skybox textures.

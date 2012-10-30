@@ -1,3 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	<title>Listing 1</title>
+	<!-- AS3 Syntax Highlighter -->
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
+	<link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
+	<script type="text/javascript">SyntaxHighlighter.all();</script>
+</head>
+
+<body style="background: white; font-family: Helvetica">
+
+<pre class="brush: as3;">
 package li.materials.globe.src
 {
 
@@ -5,7 +19,6 @@ package li.materials.globe.src
 	import away3d.entities.Mesh;
 	import away3d.materials.TextureMaterial;
 	import away3d.primitives.SphereGeometry;
-	import away3d.textures.BitmapTexture;
 	import away3d.utils.Cast;
 
 	import li.base.ListingBase;
@@ -13,11 +26,11 @@ package li.materials.globe.src
 	public class GlobeListing01 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
-		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
+		[Embed(source="../../../../embeds/solar/earth_surface_2048.jpg")]
 		public static var EarthSurfaceDiffuse:Class;
 
 		// Diffuse map for the Moon's surface.
-		[Embed(source="../../../../embeds/solar/moon.jpg")]
+		[Embed(source="../../../../embeds/solar/moon_1024.jpg")]
 		public static var MoonSurfaceDiffuse:Class;
 
 		private var _earth:ObjectContainer3D;
@@ -34,33 +47,27 @@ package li.materials.globe.src
 
 		private function createEarth():void {
 			// Material.
-			var earthSurfaceTexture:BitmapTexture = Cast.bitmapTexture( EarthSurfaceDiffuse );
-			var earthSurfaceMaterial:TextureMaterial = new TextureMaterial( earthSurfaceTexture );
-			// Geometry.
-			var earthSurfaceGeometry:SphereGeometry = new SphereGeometry( 100, 200, 100 );
-			// Mesh.
-			var earthSurfaceMesh:Mesh = new Mesh( earthSurfaceGeometry, earthSurfaceMaterial );
+			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
 			// Container.
 			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
 			_view.scene.addChild( _earth );
-			_earth.addChild( earthSurfaceMesh );
+			// Surface geometry.
+			var earthSurface:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), earthMaterial );
+			_earth.addChild( earthSurface );
 		}
 
 		private function createMoon():void {
 			// Material.
-			var moonSurfaceTexture:BitmapTexture = Cast.bitmapTexture( MoonSurfaceDiffuse );
-			var moonSurfaceMaterial:TextureMaterial = new TextureMaterial( moonSurfaceTexture );
-			// Geometry.
-			var moonSurfaceGeometry:SphereGeometry = new SphereGeometry( 50, 100, 50 );
-			// Mesh.
-			var moonSurfaceMesh:Mesh = new Mesh( moonSurfaceGeometry, moonSurfaceMaterial );
+			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
 			// Container.
 			_moon = new ObjectContainer3D();
 			_moon.rotationY = rand( 0, 360 );
 			_view.scene.addChild( _moon );
-			moonSurfaceMesh.x = 1000;
-			_moon.addChild( moonSurfaceMesh );
+			// Surface geometry.
+			var moonSurface:Mesh = new Mesh( new SphereGeometry( 50, 200, 100 ), moonMaterial );
+			moonSurface.x = 1000;
+			_moon.addChild( moonSurface );
 		}
 
 		override protected function onUpdate():void {
@@ -74,3 +81,6 @@ package li.materials.globe.src
 		}
 	}
 }
+</pre>
+</body>
+</html>
