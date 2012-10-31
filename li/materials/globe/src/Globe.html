@@ -327,7 +327,7 @@ earthCloudMaterial.specular = 0;</pre></div>
 				<figure>
 					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_08/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_08.jpg"></a>
 					<figcaption>
-						<p>Listing 8.
+						<p>Listing 8. Using a custom shader for our atmosphere.
 							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_08/src_08.html" target="_blank">Full source code.</a>
 						</p>
 					</figcaption>
@@ -364,15 +364,45 @@ return code;
 			</section>
 			<section>
 				<h3>Post Processing</h3>
-				<p>todo...</p>
+				<p>Of course, we could continue enhancing our experiment indefinitely, but for the purpose of this tutorial, we are going to do just one more thing: Pimp up the graphics
+				with a bit of post processing. That is, we won't be working on the scene itself anymore, but add a few rendering effects on top of our current result. We will add
+				a bloom effect as a GPU <code>Filter3D</code> and a lens flare effect via the regular Flash display API using <code>Bitmap</code> objects. Let's see how it will
+				look like.</p>
 				<figure>
 					<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_09/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/materials/globe/images/listing_09.jpg"></a>
 					<figcaption>
-						<p>Listing 9.
+						<p>Listing 9. Postprocessing with bloom and lens flare effects.
 							<a href="http://away3d.com/wikicontent/tutorials/li/materials/globe/bin/listing_09/src_09.html" target="_blank">Full source code.</a>
 						</p>
 					</figcaption>
 				</figure>
+				<p>Ain't it cool? Let's have a look at how each of the effects are accomplished.</p>
+				<h4>Bloom Effect</h4>
+				<p>Away3D offers an awesome, extensible post processing kit via the filters package. These effects can be considered as shaders, but instead of acting on independent
+				materials and regular 3D geometry, work on the final output of the scene's rendering and drawing the result on a quad that perfectly fits the screen. This gives
+				us the possibility of using the GPU's vast processing power for global scene rendering effects. In this case, we are using a bloom filter. You can read about it
+				<a href="http://en.wikipedia.org/wiki/Bloom_%28shader_effect%29">here</a>. Basically, a bloom filter emulates how lenses experience over exposure by very bright
+				light sources. On our case, we use it when looking directly at the sun. To set up filters in Away3D we simply initialize the objects and set them as the view's
+				filters3d array. You can chain multiple filters in this way.</p>
+				<div class="preBox"><pre class="brush: as3">_bloomFilter = new BloomFilter3D( 2, 2, 0.5, 0, 4 );
+			_view.filters3d = [ _bloomFilter ];</pre></div>
+				<p>Then, at runtime, we evaluate the strength ( exposure parameter ) of the filter by calculating 'how much in front of the sun' the viewer is. This is done in the
+				<code>updateBloom()</code> method, mainly by projecting the camera position onto the X axis ( along which the sun lays ). This value is used as well to slightly
+				scale up the sun <code>Sprite3D</code>.</p>
+				<h4>Lens Flare Effect</h4>
+				<p>This is a classical 2D, regular Flash display API, lens flare effect. We simply load a few bitmaps, place them on top of our view and align them to produce the
+				desired effect. What's interesting is how we evaluate the position and visibility of the flares in the <code>updateFlares()</code> method. The most important part
+				of this method is the usage of <code>view.project( vector:Vector3D )</code>. This method takes a scene position in 3D space and transforms it to 2D screen space.
+				We evaluate the visibility of our flares by first determining if the sun is in the screen and by also checking if the sun is occluded by the Earth. We've
+				embedded the mini class <code>FlareObject</code> just to make the manipulation of our flares a bit easier for us.</p>
+			</section>
+			<section>
+				<h3>Conclusion</h3>
+				<p>This concludes our little Planet Earth simulation. We started with a very basic scene in terms of geometry and shading and step by step enhanced the way it looked.
+				First, we used a sky box and billboards to enrich the scene, and then we meticulously focused on enhancing the materials of the Earth. This even got us into coding
+				a bit of AGAL. With all this, you should now be a bit more familiar with Away3D's powerful and flexible material system, which allows us to produce some pretty
+				stunning visual effects. Surely, you could enhance our experiment greatly, since we've kept things as simple as possible here but potentially, you have
+				the full power of the GPU to accomplish whatever effect is in your creative mind, and Away3D makes it very easy for us to make these ideas happen.</p>
 			</section>
 		</article>
 	</body>

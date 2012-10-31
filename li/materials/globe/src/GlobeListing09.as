@@ -21,7 +21,6 @@ package li.materials.globe.src
 	import away3d.textures.BitmapTexture;
 	import away3d.utils.Cast;
 
-	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BitmapDataChannel;
 	import flash.display.BlendMode;
@@ -109,11 +108,13 @@ package li.materials.globe.src
 		private var Flare12:Class;
 
 		private var _earth:ObjectContainer3D;
+		private var _earthClouds:Mesh;
 		private var _moon:ObjectContainer3D;
 		private var _sun:Sprite3D;
 		private var _atmosphereDiffuseMethod:CompositeDiffuseMethod;
 		private var _bloomFilter:BloomFilter3D;
-		private var flares:Vector.<FlareObject> = new Vector.<FlareObject>();
+		private var _flares:Vector.<FlareObject> = new Vector.<FlareObject>();
+		private var _flareVisible:Boolean;
 
 		public function GlobeListing09() {
 			super();
@@ -143,18 +144,19 @@ package li.materials.globe.src
 			// Bloom effect.
 			_bloomFilter = new BloomFilter3D( 2, 2, 0.5, 0, 4 );
 			_view.filters3d = [ _bloomFilter ];
-			flares.push(new FlareObject(new Flare10(),  3.2, -0.01, 147.9));
-			flares.push(new FlareObject(new Flare11(),  6,    0,     30.6));
-			flares.push(new FlareObject(new Flare7(),   2,    0,     25.5));
-			flares.push(new FlareObject(new Flare7(),   4,    0,     17.85));
-			flares.push(new FlareObject(new Flare12(),  0.4,  0.32,  22.95));
-			flares.push(new FlareObject(new Flare6(),   1,    0.68,  20.4));
-			flares.push(new FlareObject(new Flare2(),   1.25, 1.1,   48.45));
-			flares.push(new FlareObject(new Flare3(),   1.75, 1.37,   7.65));
-			flares.push(new FlareObject(new Flare4(),   2.75, 1.85,  12.75));
-			flares.push(new FlareObject(new Flare8(),   0.5,  2.21,  33.15));
-			flares.push(new FlareObject(new Flare6(),   4,    2.5,   10.4));
-			flares.push(new FlareObject(new Flare7(),   10,   2.66,  50));
+			// Initialize flares.
+			_flares.push( new FlareObject( new Flare10(), 3.2, -0.01, 147.9 ) );
+			_flares.push( new FlareObject( new Flare11(), 6, 0, 30.6 ) );
+			_flares.push( new FlareObject( new Flare7(), 2, 0, 25.5 ) );
+			_flares.push( new FlareObject( new Flare7(), 4, 0, 17.85 ) );
+			_flares.push( new FlareObject( new Flare12(), 0.4, 0.32, 22.95 ) );
+			_flares.push( new FlareObject( new Flare6(), 1, 0.68, 20.4 ) );
+			_flares.push( new FlareObject( new Flare2(), 1.25, 1.1, 48.45 ) );
+			_flares.push( new FlareObject( new Flare3(), 1.75, 1.37, 7.65 ) );
+			_flares.push( new FlareObject( new Flare4(), 2.75, 1.85, 12.75 ) );
+			_flares.push( new FlareObject( new Flare8(), 0.5, 2.21, 33.15 ) );
+			_flares.push( new FlareObject( new Flare6(), 4, 2.5, 10.4 ) );
+			_flares.push( new FlareObject( new Flare7(), 10, 2.66, 50 ) );
 		}
 
 		private function createEarth():void {
@@ -193,8 +195,8 @@ package li.materials.globe.src
 			var earthSurface:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), earthSurfaceMaterial );
 			_earth.addChild( earthSurface );
 			// Earth cloud geometry.
-			var earthSky:Mesh = new Mesh( new SphereGeometry( 101, 200, 100 ), earthCloudMaterial );
-			_earth.addChild( earthSky );
+			_earthClouds = new Mesh( new SphereGeometry( 101, 200, 100 ), earthCloudMaterial );
+			_earth.addChild( _earthClouds );
 			// Earth atmosphere geometry.
 			var earthAtmosphere:Mesh = new Mesh( new SphereGeometry( 115, 200, 100 ), atmosphereMaterial );
 			earthAtmosphere.scaleX = -1;
@@ -272,43 +274,47 @@ package li.materials.globe.src
 			updateBloom();
 			updateFlares();
 			_earth.rotationY += 0.05;
+			_earthClouds.rotationY += 0.01;
 			_moon.rotationY -= 0.005;
 		}
 
 		private function updateBloom():void {
+			// Evaluate alignment with the sun.
 			var pos:Vector3D = _view.camera.position.clone();
 			pos.normalize();
 			var proj:Number = -pos.dotProduct( Vector3D.X_AXIS );
 			if( proj < 0 ) proj = 0;
 			proj = Math.pow( proj, 12 );
-			_bloomFilter.exposure = 5 * proj;
+			// Use value to update bloom strength and sun size.
+			_bloomFilter.exposure = 10 * proj;
 			_sun.scaleX = _sun.scaleY = _sun.scaleZ = 1 + proj;
 		}
 
-		private var flareVisible:Boolean;
-
 		private function updateFlares():void {
-			var flareVisibleOld:Boolean = flareVisible;
+			// Evaluate flare visibility.
 			var sunScreenPosition:Vector3D = _view.project( _sun.scenePosition );
 			var xOffset:Number = sunScreenPosition.x - _view.width / 2;
 			var yOffset:Number = sunScreenPosition.y - _view.height / 2;
 			var earthScreenPosition:Vector3D = _view.project( _earth.scenePosition );
-			var earthRadius:Number = 100 * _view.height / earthScreenPosition.z;
+			var earthRadius:Number = 80 * _view.height / earthScreenPosition.z;
+			var flareVisibleOld:Boolean = _flareVisible;
+			var sunInView:Boolean = sunScreenPosition.x > 0 && sunScreenPosition.x < _view.width && sunScreenPosition.y > 0 && sunScreenPosition.y < _view.height && sunScreenPosition.z > 0;
+			var sunOccludedByEarth:Boolean = Math.sqrt( xOffset * xOffset + yOffset * yOffset ) < earthRadius;
+			_flareVisible = sunInView && !sunOccludedByEarth;
+			// Update flare visibility.
 			var flareObject:FlareObject;
-			flareVisible = (sunScreenPosition.x > 0 && sunScreenPosition.x < _view.width && sunScreenPosition.y > 0 && sunScreenPosition.y < _view.height && sunScreenPosition.z > 0 && Math.sqrt( xOffset * xOffset + yOffset * yOffset ) > earthRadius) ? true : false;
-			//update flare visibility
-			if( flareVisible != flareVisibleOld ) {
-				for each ( flareObject in flares ) {
-					if( flareVisible )
+			if( _flareVisible != flareVisibleOld ) {
+				for each ( flareObject in _flares ) {
+					if( _flareVisible )
 						addChild( flareObject.sprite );
 					else
 						removeChild( flareObject.sprite );
 				}
 			}
-			//update flare position
-			if( flareVisible ) {
+			// Update flare position.
+			if( _flareVisible ) {
 				var flareDirection:Point = new Point( xOffset, yOffset );
-				for each ( flareObject in flares ) {
+				for each ( flareObject in _flares ) {
 					flareObject.sprite.x = sunScreenPosition.x - flareDirection.x * flareObject.position - flareObject.sprite.width / 2;
 					flareObject.sprite.y = sunScreenPosition.y - flareDirection.y * flareObject.position - flareObject.sprite.height / 2;
 				}
@@ -334,26 +340,19 @@ import flash.geom.Point;
 
 class FlareObject
 {
-	private var flareSize:Number = 144;
-
 	public var sprite:Bitmap;
-
 	public var size:Number;
-
 	public var position:Number;
-
 	public var opacity:Number;
 
-	/**
-	 * Constructor
-	 */
-	public function FlareObject(sprite:Bitmap, size:Number, position:Number, opacity:Number)
-	{
-		this.sprite = new Bitmap(new BitmapData(sprite.bitmapData.width, sprite.bitmapData.height, true, 0xFFFFFFFF));
-		this.sprite.bitmapData.copyChannel(sprite.bitmapData, sprite.bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
-		this.sprite.alpha = opacity/100;
+	private const FLARE_SIZE:Number = 144;
+
+	public function FlareObject( sprite:Bitmap, size:Number, position:Number, opacity:Number ) {
+		this.sprite = new Bitmap( new BitmapData( sprite.bitmapData.width, sprite.bitmapData.height, true, 0xFFFFFFFF ) );
+		this.sprite.bitmapData.copyChannel( sprite.bitmapData, sprite.bitmapData.rect, new Point(), BitmapDataChannel.RED, BitmapDataChannel.ALPHA );
+		this.sprite.alpha = opacity / 100;
 		this.sprite.smoothing = true;
-		this.sprite.scaleX = this.sprite.scaleY = size*flareSize/sprite.width;
+		this.sprite.scaleX = this.sprite.scaleY = size * FLARE_SIZE / sprite.width;
 		this.size = size;
 		this.position = position;
 		this.opacity = opacity;
