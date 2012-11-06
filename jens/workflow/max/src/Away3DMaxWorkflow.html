@@ -1,0 +1,314 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Away3D and 3DSMax Workflow</title>
+    <!-- AS3 Syntax Highlighter -->
+    <script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
+    <script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
+    <link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
+    <script type="text/javascript">SyntaxHighlighter.all();</script>
+    <!-- shadow box -->
+    <link rel="stylesheet" type="text/css" href="http://away3d.com/static/shadowBox/shadowbox.css"/>
+    <script type="text/javascript" src="http://away3d.com/static/shadowBox/shadowbox.js"></script>
+    <script type="text/javascript">Shadowbox.init();</script>
+    <!-- Wiki base styles -->
+    <!--<link rel="stylesheet" href="http://away3d.com/themes/wiki_themes/away3d/wiki_styles.css" type="text/css" media="screen" title="Global Styles" charset="utf-8"/>-->
+    <!-- Styles for tutorials -->
+    <link type="text/css" rel="stylesheet" href="http://away3d.com/wikicontent/styles/tutorial.css"/>
+</head>
+<body>
+[[Category:Workflow]]
+<article>
+<aside>
+        <em><strong>Tutorial requirements:</strong></em>
+        <ul><li>Windows based computer</li>
+            <li>Autodesk 3ds Max 2012 (<a href="http://usa.autodesk.com/adsk/servlet/download/item?id=16324410&amp;siteID=123112">download trial here</a>)</li>
+            <li>The latest version of Away3D 4</li>
+            <li>AWD plugin for Max</li>
+        </ul>
+</aside>
+<section>
+    <h3>Introduction</h3>
+    <p>For the launch of Away3d 4.0 Gold, we have prepared a series of tutorials that show the workflow from various 3D
+        applications to Away3D and the Flash Player. This tutorial shows how to take a biped-animated model from
+        Autodesk 3ds Max and turn it into an interactive Flash file as in the example below.</p>
+    <figure>
+        <span class="todo">Make this shadowbox demo work.</span> <a
+            href="http://away3d.com/wikicontent/tutorials/jens/workflow/max/bin/listing_01/Launcher.html"
+            rel="shadowbox; width=800;height=600;"><img class="interactiveFigure"
+            src="http://away3d.com/wikicontent/tutorials/jens/workflow/max/images/listing_01.jpg"></a>
+        <figcaption>
+            <p>Click in the SWF above to control the man using the arrow keys, the E-key, Shift and the Space bar.
+                <a href="http://away3d.com//examples/away3d_4_0/MaxAWDWorkflow/bin_hi/">Click here</a> to open a high
+                resolution version of the file. </p>
+        </figcaption>
+    </figure>
+    <p>Make sure you have 3ds Max installed and working on your computer. Then download the latest official version
+        of Away3D 4 from the <a href="http://away3d.com/download/">Downloads section on Away3D.com</a> or grab the
+        most current version <a href="http://github.com/away3d/">via GitHub</a> (If you don&#39;t know what GitHub
+        is, just use the Download section). You will also need a tool for creating your Flash file such as
+        Adobe Flash Builder (<a href="http://www.adobe.com/products/flash-builder.html">download trial here</a>).</p>
+</section>
+<section>
+    <h3>Adding the AWD plugin</h3>
+    <p>The AWD format was created by the Away3D team to solve the headache of normal 3D file formats not being suited
+        for the web. The goal is to create an extensible, compact format that allows the export 3D data with (or
+        without) all assets embedded such as textures, animation and more. Any number of models is supported, so even
+        complete scenes can be exported. The format is free, defined in an open specification, and has an open-source <a
+            href="http://code.google.com/p/awd/source/checkout">SDK</a> for C++ and Python to aid in encoding AWD files.
+        This is to encourage others to adopt it in their software as well. </p>
+    <p>The AWD team aims to build AWD exporters for the most popular 3D packages such as Blender, Maya and 3ds Max. The
+        3ds Max plugin for Max 2012 is available in the <a href="http://code.google.com/p/awd/downloads/list">downloads
+        section</a>. At the time this tutorial is written, the plugins for Maya and Blender plugins are only available
+        as source code, but expect them to be available in compiled versions soon. </p>
+    <p>To install the 3ds Max plugin, download the version that fits your system (32/64bit) and simply <a
+            href="http://code.google.com/p/awd/wiki/3dsMax">follow the instructions here</a>. Once you have copied the
+        files to the correct folder, restart Max to see the AWD option when you select Export from the main menu. </p>
+    <a href="http://away3d.com/images/uploads/lo00_awd.png"
+            rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+            class="staticFigure" alt="" src="http://away3d.com/images/uploads/lo00_awd.png"
+            style="width: 540px; height: 163px; "/></a>
+</section>
+<section>
+    <h3>Preparing the model in Max</h3>
+    <p>The model and code for this tutorial was created by French designer <a href="http://3dflashlo.wordpress.com">Thillet
+        Laurent</a>. It started as a custom model that was rigged in Character Studio and animated with Biped. You can
+        <a href="http://away3d.com/examples/away3d_4_0/MaxAWDWorkflow/MaxAWDWorkflow.zip">download the example files
+            here</a>. This ZIP archive contains the 3ds Max file, textures, Biped .bip files, a src folder containing
+        the actionscript code as well as a file called 'sequence.txt' that we&#39;ll get back to later. </p>
+    <p>Opening the file 'onkba.max' in Max, you may get some dialogues as you open the file. Just click
+        through these to open the file. Now you can use the scrub bar at the bottom of the screen to see the three
+        animations showing the model in paused, walking and running states. If you open Graph Editors -&gt; Motion
+        Mixer, you can see the three Biped animations and how they are ordered. From this screen, you can speed up/slow
+        down each animation by extending/compressing it and also change order and position on the timeline.</p>
+    <p><a href="http://away3d.com/images/uploads/lo01c.png"
+                rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+                class="staticFigure" alt="" src="http://away3d.com/images/uploads/lo01c.png"
+                style="width: 540px; height: 339px; "/></a></p>
+    <p>To view the Bones driving the animation, Open the Manage Layers panel. Turn off the bulb for the Hide-column on
+        the BONE layer and turn it on for the SKIN layer. This skeleton will also be exported in the AWD file, but you
+        can turn it off using Actionscript when playing it back. An option to only include layers set as 'renderable'
+        is on the current wish-list that will solve this in the future.</p>
+    <p><a href="http://away3d.com/images/uploads/lo01b.png"
+                rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+                class="staticFigure" alt="" src="http://away3d.com/images/uploads/lo01b.png"
+                style="width: 540px; height: 324px; "/></a></p>
+    <p>While you are working with your own files for AWD export, keep in mind that AWD currently supports geometry and
+        meshes (including instancing), scene graph with containers and parenting, basic color and texture materials,
+        skeletons and skeletal animation. Anything other than this such as procedural textures and other Max specific
+        features will be ignored.</p>
+</section>
+<section>
+    <h3>Exporting from Max</h3>
+    <p>Once you have finished your model, we need to set up what parts of the animation we want to export. Start by
+        creating a new folder that we can place our files in. Open a new Notepad-file and save it as 'sequences.txt'
+        in the newly created folder. This file couples the animated frames with names that we can later reference in our
+        code. You can find full instructions on <a href="http://code.google.com/p/awd/wiki/UsingSequencesTxtFiles">this
+        Wiki page</a>.</p>
+    <p>For our example file, we&#39;ll use the following content:</p>
+    <div class="preBox"><pre class="brush: as3">Breathe 0 60&#10;Walk 70 130&#10;Run 140 157</pre></div>
+    <p>This file is only used when exporting from Max, as the exporter embeds this data into the AWD file. You can
+        change the sequence around and the first one mentioned will be played back by the AWD preview application that
+        is included with the exporter plug-in. Now we are ready to export. Select Export from the main menu and browse
+        to the correct folder. Choose AWD in the dropdown and input a file name. Once you click through, you&#39;ll get
+        to the AWD export settings dialogue. click through the various headings to inspect the options available. For
+        most purposes, the defaults are fine. Make sure that the name of the text file you just created is correct and
+        click on the 'Flash Viewer' heading.</p>
+    <p>After exporting the file, the exporter will by default create and open a Flash preview file. If you just want to
+        view the file on your computer make sure 'Export for local preview' is checked. If you want to export
+        the file for others to view online, check the 'Export for deployment' option. If you choose the
+        latter, you will not see anything when opening the exported file locally. This is expected behavior and part of
+        the Flash Player security sandbox model.</p>
+    <p>Note that the plugin will export the whole scene. Exporting only selections is currently not supported. In our
+        case, we&#39;ll want to view the exported file so check the 'Export for local preview'-option. The
+        resulting file will look like this:</p>
+    <p><a href="http://away3d.com/images/uploads/Screen_shot_2012-07-04_at_3.40.34_PM.png"
+                rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+                class="staticFigure" alt=""
+                src="http://away3d.com/images/uploads/Screen_shot_2012-07-04_at_3.40.34_PM.png"
+                style="width: 541px; height: 308px; "/></a></p>
+    <p>Don&#39;t worry if the Skeleton shows in the exported file. When you use it in Flash, it&#39;s up to you to make
+        it visible. In other words - just ignore it and it won&#39;t be shown.</p>
+    <p style="margin-left: 40px; "><em>Troubleshooting: if the exported file just shows a blank window and nothing loads, it is very probable that
+            something is wrong with your 'sequences.txt'-file. Double-check that the file is inside the folder
+            you are exporting to, that the filename is correct and that the contents of the file match your file. See
+            the <a href="http://code.google.com/p/awd/wiki/UsingSequencesTxtFiles">Wiki page</a> for instructions.</em></p>
+</section>
+<section>
+    <h3>Using the model in Flash</h3>
+    <p>This tutorial will not focus on the basic setup of an Away3D 4 scene, but check out the <a
+            href="http://away3d.com/tutorials/">Tutorials section</a> for tutorials teaching the basics of cameras,
+        lights, materials and adding objects to your scene. In this tutorial, we&#39;ll be concentrating on the steps
+        that make it possible to load the exported AWD file and then how to access and control the animations within.</p>
+    <p>For the Flash part of this tutorial, we&#39;ll use the Adobe product Flash Builder (<a
+            href="http://www.adobe.com/products/flash-builder.html">download 30-day trial version here</a>), but you can
+        of course use any other IDEs as well. You can find a detailed description on how use Away3D with Adobe Flash,
+        Flash Builder and the free Open Source tool FlashDevelop <a
+            href="http://www.flashmagazine.com/tutorials/detail/installing_away3d_for_flash_flex_or_flashdevelop/">here</a>.
+        You may also be interested in <a
+            href="http://www.flashmagazine.com/tutorials/detail/using_actionscript_projects_in_flex_or_flash/">this
+        tutorial</a> that explains how to use Actionscript projects in these same tools. </p>
+    <p>Start by creating a New -&gt; Actionscript Project. Name the project 'MaxAWDWorkflow' and press
+        ok.</p>
+    <p><a href="http://away3d.com/images/uploads/Screen_shot_fdsfsfdsfds.png"
+                rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+                class="staticFigure" alt="" src="http://away3d.com/images/uploads/Screen_shot_fdsfsfdsfds.png"
+                style="width: 540px; height: 600px; "/></a></p>
+    <p>Copy all the example files for this tutorial (link) into the newly created project folder. This will replace the
+        empty actionscript file named 'MaxAWDWorkflow.as' that your IDE created for you. We&#39;ll use this
+        very soon, but first we need to tell Flash Builder where to find the Away3D source files.</p>
+    <p>You can download the source files either as a ZIP archive (link) from Github as mentioned above. Once you have
+        copied these files to a suitable folder on your computer, you right click your project root and click 'Properties'
+        in the popup menu. Click the 'Actionscript Build Path' in the dialogue that opens, then on the 'Source
+        Path' button  and click the 'Add Folder' button. Select the folder containing the
+        Away3D source files and close the dialogues.</p>
+    <p><a href="http://away3d.com/images/uploads/Away_adding_away.png"
+                rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+                class="staticFigure" alt="" src="http://away3d.com/images/uploads/Away_adding_away.png"
+                style="width: 540px; height: 520px; "/></a></p>
+    <p>Your Project Explorer should now have the following files and folders and the MaxAWDWorkflow.as file should now
+        contain the following:</p>
+    <p><a href="http://away3d.com/images/uploads/Screen_shot_2012-07-08_at_4.56.19_PM.png"
+                rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+                class="staticFigure" alt=""
+                src="http://away3d.com/images/uploads/Screen_shot_2012-07-08_at_4.56.19_PM.png"
+                style="width: 540px; height: 294px; "/></a></p>
+    <p>Click the green 'Run' button at the top and verify that you can see a round, red sphere. If you
+        can&#39;t see anything in the exported file or you get a 'Error #2044' message, you may need to add a
+        little extra code to your HTML template. This is explained in the section below. If you see the red sphere,
+        skip ahead to the next heading.</p>
+</section>
+<section>
+    <h3>Stage3D embedding</h3>
+    <p>Unfortunately, you can&#39;t just export your file when working with Stage3D. The most common problem is that
+        you get a dialogue that says 'Error #2044: Unhandled ErrorEvent:. text=Error #3702: Context3D not
+        available.' Context3D is one of the core classes for Stage3D in the Flash Player. Using Stage3D requires
+        that you set the following parameter in your HTML embed code:</p>
+    <div class="preBox"><pre class="brush: as3">params.wmode='direct';</pre></div>
+    <p>Click to expand the image below and you can see the required addition in context.</p>
+    <p><a href="http://away3d.com/images/carousel/awd_max_html_wrapper.png"
+                rel="shadowbox[slideshow];options={counterType:'skip',continuous:true,animSequence:'sync'}"><img
+                class="staticFigure" alt="" src="http://away3d.com/images/carousel/awd_max_html_wrapper.png"
+                style="width: 540px; height: 211px; "/></a></p>
+    <p>If you are using Adobe AIR, you may need to add:</p>
+    <div class="preBox"><pre class="brush: as3">&lt;renderMode&gt;direct&lt;/renderMode&gt;</pre></div>
+    <p>into your application.xml. If you still have problems, note that if you are using Flash Builder, IntelliJ or
+        FlashDevelop or any IDE based on an older version of the Flex SDK, you will need to add the following compiler
+        argument:</p>
+    <div class="preBox"><pre class="brush: as3">-swf-version=13</pre></div>
+    <p>This will force compilation for Flash Player 11.x.</p>
+</section>
+<section>
+    <h3>Running the example file</h3>
+    <p>Once you know this works as intended, it is time to test the exported .awd file. To do this, set the 'AWDViewerLoth.as'
+        file to be the file to run.</p>
+    <p>How to do this varies by IDE, but in Adobe Flash Builder, you just right click the 'AWDViewerLoth.as'-file
+        and select 'Set as Default application'. Just keep the 'AWDViewerLoth.as' open for the rest
+        of this tutorial as we&#39;ll be referencing bits of it later on. Press the green Run button again and if all
+        goes as intended, you&#39;ll soon see our animated friend. You can use the WASD keys to rotate and walk around.
+        Hold down the Shift key to run.</p>
+    <p style="margin-left: 40px; "><em>If the file fails to run and you get the message 'SecurityError: Error #2148', you&#39;ll need to
+            add the compiler argument </em><em>-use-network=false to your setup. </em><em>Please <a
+            href="http://stackoverflow.com/questions/304271/security-sandbox-in-as3">read this entry on Stack
+        Overflow</a> for how to solve this.</em></p>
+    <p>So what makes this model work? I&#39;ll walk you through the code next. The constructor-method contains calls to
+        the methods initEngine, initText and initLights. These set up the scene, view and camera, all the basics that we
+        need to view our 3D content. The last method called in the constructor is called initLoading and this is where
+        we load our assets using the AssetLibrary class.</p>
+</section>
+<section>
+    <h3>The AssetLibrary</h3>
+    <p>This is a new class in Away3D 4 and it really simplifies working with loaded assets. Assets are any item that
+        can be used in the engine: a Mesh, a Geometry, a BitmapTexture etc. You basically just tell the AssetLibrary to
+        load what you need (models, textures, animations) and then request the results when loaded. </p>
+    <p>The first thing you must do is to enable the file format parsers that you want to use in your project. Away3D4
+        can import files in the formats OBJ, AC3D, DAE, 3DS, MD2, MD5 as well as the native AWD1 and 2 formats. If you
+        are lazy, you can add all these parsers in one go:</p>
+    <div class="preBox"><pre class="brush: as3">Parsers.enableAllBundled();</pre></div>
+    <p>However, the more parsers you enable, the larger your swf-file. In our project, we&#39;re saving 82Kb by
+        enabling the AWD2 parser only:</p>
+    <div class="preBox"><pre class="brush: as3">AssetLibrary.enableParser( AWD2Parser );</pre></div>
+    <p>The AssetLibrary will keep you updated on the loading progress. This is done using the Event-listener system
+        built into Flash:</p>
+    <div class="preBox"><pre class="brush: as3">AssetLibrary.addEventListener( AssetEvent.ASSET_COMPLETE, onAssetComplete );&#10;AssetLibrary.addEventListener( LoaderEvent.RESOURCE_COMPLETE, onResourceComplete );&#10;AssetLibrary.addEventListener( LoaderEvent.LOAD_ERROR, onLoadError );</pre></div>
+    <p>The code above lets us listen for three important things:</p>
+    <p><strong>AssetEvent.ASSET_COMPLETE</strong><br/> A 3D model may require more than just the mesh. In our case, the
+        model contains animations that are controlled by a skeleton. The skeleton has different poses and it may also
+        embed materials (basic color-materials and textures are supported). The model itself is built from many
+        different sub-meshes and these contain geometry. Using the onAssetComplete-method you can inspect at all of
+        these as they load in and apply actions to them. </p>
+    <p>In this tutorial, we only use this event for debugging as the loading itself is handled by the AssetLibrary. By
+        using a trace-command, we can see the name and type of each asset as it is loaded in. As you can see, the loaded
+        assets all have the same names we used when authoring in 3ds Max and the animations map to the names we added to
+        the 'sequencences.txt' file. If there is a naming conflict, the AssetLibrary has ways of handling this
+        too. Taking care when naming your models, will save you any problems with this.</p>
+    <p>You can also listen for even more granulated events that tell when each of these assets has been loaded. You can
+        look up these events by looking at the top of the AssetLibraryBundle-class included in the Away3D source.</p>
+    <p><strong>LoaderEvent.LOAD_ERROR</strong><br/> In the event of something not loading as it should, we have to
+        handle this in some way. In this tutorial, we are just tracing the error out to the console, but for a larger
+        project it will be helpful to show the user an error message. </p>
+    <p>If you do not add a handler for this event, your project will simply not display anything. No error will be
+        displayed to the user unless they have the special Debug version of the Flash Player installed. This is only
+        common among Flash developers, so you should be able to see 'Error #2032: Stream Error' in your
+        IDE if this happens. Normal users will just see a blank screen, so make sure you handle this event by adding
+        this EventListener to your loader.</p>
+    <p><strong>LoaderEvent.RESOURCE_COMPLETE</strong><br/> For every element you request that the AssetLibrary should
+        load, this event will fire. In our case, the texture is separate from the AWD model so we have two load calls:
+    </p>
+    <div class="preBox"><pre class="brush: as3">AssetLibrary.load( new URLRequest( TEXTURE_URL ) );&#10;AssetLibrary.load( new URLRequest( MESH_URL ) );</pre></div>
+    <p>Note that AWD2 may also embed the textures into the model. This simplifies asset management at the price of
+        larger files.</p>
+    <p>On the web, there is no guarantee that assets will complete loading in the same order as we request them. To
+        manage this, the onResourceComplete-method maintains a counter to check that we have loaded all the resources we
+        need before moving on. Once both the model and the texture has loaded, it is safe to display our 3D model. This
+        is done in the setupScene-method.</p>
+</section>
+<section>
+    <h3>Rendering the output</h3>
+    <p>Anything that is to be rendered in Away3D must be added to 'the scene'. Some parts such as the 'ground'
+        was added in the initEngine-method. In the setupScene-method we prepare the material for our 'hero'
+        and then apply it to the model. The model is also scaled. Since most 3D programs work in arbitrary 'units',
+        scaling your model will often be required.</p>
+    <div class="preBox"><pre class="brush: as3">hero.scale( 8 );</pre></div>
+    <p>This is easy to avoid if you just know how the camera-setup will work. You can of course also tweak the camera
+        setup to compensate for model size. It&#39;s all relative, so you decide. For larger 3D projects it is important
+        to avoid any such issues by agreeing on a 'world scale' and then making sure all models follow
+        that.</p>
+    <p>When the model is set up as we want it, we add it to our scene:</p>
+    <div class="preBox"><pre class="brush: as3">scene.addChild( hero );</pre></div>
+    <p>This makes the model renderable and thus visible. It&#39;ll be standing in the default pose so, next up we set
+        up the animation set. This acts a container for animation data and use the values we captured in the
+        ASSET_COMPLETE handler earlier:</p>
+    <div class="preBox"><pre class="brush: as3">animationSet = new SkeletonAnimationSet(3);&#10;animationSet.addState(breatheState.name, breatheState);&#10;animationSet.addState(walkState.name, walkState);&#10;animationSet.addState(runState.name, runState);</pre></div>
+    <p>Now that we have our animation set,  we set up our animator that will connect the animation data to the
+        model, and provide a control mechanism. We do this with an animator object that ties together the skeleton we
+        retrieved from ASSET_COMPLETE along with the newly created animation set, and applies it to our hero model. In
+        order to stop the character from walking away from the camera, we disable the position update that usually
+        applies to bones animation when any motion is expected</p>
+    <div class="preBox"><pre class="brush: as3">animator = new SkeletonAnimatior(animationSet, skeleton);&#10;animator.updateRootPosition = false;&#10;hero.animator = animator;</pre></div>
+    <p>Finally, we define a state transition for our animation states. This is used when transitioning active states in
+        the animator, and can be custom created for whatever behavior is required. For now, we will use the default
+        crossfade transition object:</p>
+    <div class="preBox"><pre class="brush: as3">crossfadeTransition = new CrossfadeStateTransition(XFade_TIME);</pre></div>
+    <p>XFADE_TIME is a constant (defined at the top of the Actionscript file) that tells how many seconds Away3D should
+        blend between the current and the new animation state. Setting this to zero would cause the change to happen
+        instantly. This looks bad, so you usually want to blend the vertex positions as we do here.</p>
+    <p>To be sure that all the animations were successfully loaded and created, we test that animationSet.hasState for
+        each animation exists. This isn&#39;t required, but it&#39;s a good idea to do this to avoid strange errors. If
+        all is good, we point the camera at our hero and start rendering and listening for user input.</p>
+    <p>Depending on what key the user presses, the movement of the character is done in the updateMovement-method. If
+        the user is not pressing any key, the goToPauseState method is executed. In both of these, we set the name of
+        the animation state and then activate it using:</p>
+    <div class="preBox"><pre class="brush: as3">animator.play(currentAnim, crossfadeTransition);</pre></div>
+</section>
+<section>
+    <h3>Summing up</h3>
+    <p>Thanks to the AWD format and the AWD plugins, it is easy to import animated and textured models straight from
+        Autodesk 3ds Max into Away3D. The new AssetLibrary in Away3D 4 simplifies the loading procedure for anything
+        ranging from basic scenes like this, to large and complex games. The Actionscript language makes it easy to
+        build large scale interactive applications for the web and mobile and the compact AWD files improve the end user
+        experience by ensuring less loading time.</p>
+</section>
+</article>
+</body>
+</html>
