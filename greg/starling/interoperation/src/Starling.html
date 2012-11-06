@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Away3D and Starling Interoperation</title>
+	<!-- AS3 Syntax Highlighter -->
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
+	<link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
+	<script type="text/javascript">SyntaxHighlighter.all();</script>
+	<!-- shadow box -->
+	<link rel="stylesheet" type="text/css" href="http://away3d.com/static/shadowBox/shadowbox.css"/>
+	<script type="text/javascript" src="http://away3d.com/static/shadowBox/shadowbox.js"></script>
+	<script type="text/javascript">Shadowbox.init();</script>
+	<!-- Wiki base styles --><!--<link rel="stylesheet" href="http://away3d.com/themes/wiki_themes/away3d/wiki_styles.css" type="text/css" media="screen" title="Global Styles" charset="utf-8"/>--><!-- Styles for tutorials -->
+	<link type="text/css" rel="stylesheet" href="http://away3d.com/wikicontent/styles/tutorial.css"/>
+</head>
+<body>
+[[Category:Starling]]
+<article>
+	<section>
+		<h3>Introduction</h3>
+		<p> The Away3D 4.0 Gold release includes an API called Stage3DManager for integrating the rendering process of Actionscript libraries that use Stage3D. In this tutorial, we see how this API can be used to combine Away3D and Starling frameworks into a single, high-performance rendering loop. </p>
+		<p> Since the introduction of Stage3D in Air and the Flash Player, numerous actionscript frameworks have been introduced and upgraded to take full advantage of the new found GPU acceleration. Away3D is one of those frameworks which now leverages the new GPU features allowing developers to create incredibly rich 3D interactive experiences. Starling, similarly, is another framework exploiting the power of Stage3D but is focused on providing GPU accelerated 2D graphics.</p>
+		<p> There has been several requests to combine both 2D and 3D frameworks together in a single application, however, to do this has previously required modification to the APIs themselves or having each framework render within it's own separate Stage3D instance. Unfortunately, along with a greater performance overhead, there currently isn't support for transparent Stage3D instances so overlaying them obscures the instance beneath.</p>
+		<figure>
+            <a href="http://away3d.com/images/uploads/integration.gif" rel="shadowbox[slideshow]">
+                <img class="staticFigure" alt="Stage Video, Stage3D and Stage layering" src="http://away3d.com/images/uploads/integration.gif" style="width: 540px; height: 329px; "/>
+            </a>
+        </figure>
+		<p> With the 'production ready' release of Away3D 4.0, comes the ability to easily combine multiple frameworks into a single Stage3D instance. You can now layer any combination and any number of Away3D or Starling instances. In fact, there is no reason any Stage3D framework could be used - See the technical details at the bottom of this page.</p>
+		<p> This tutorial will take you through an example of having a background Starling layer, a middle Away3D layer and a foreground Starling layer.</p>
+		<figure><a
+				href="http://away3d.com/examples/away3d_4_0/Intermediate_One_Away3D_Two_Starling_Layers/Intermediate_One_Away3D_Two_Starling_Layers.html"
+				title="Example of two Starling layers and one Away3D layer inter-mixed"><img class="staticFigure"
+				alt="Away3D and Starling Interoperation example"
+				src="http://away3d.com/images/uploads/integrationdemo.jpg"
+				style="width: 540px; height: 405px; "/><br/> Click to view the full demo</a></figure>
+	</section>
+	<section>
+		<h3>Lets begin...</h3>
+		<p> Under normal operation, when only Away3D is being used, management of the Stage3D is handled internally. It is this internal management that make it extremely easy to work with, but also causes difficulties in sharing the Stage3D instance. What is necessary is access to a common Stage3D instance where all the rendering will happen, for each framework. This is done through the
+			<em>Stage3DManager</em> and <em>Stage3DProxy</em> classes.</p> <p> </p>
+
+		<div class="preBox"><pre class="brush: as3">&#10;// Stage manager and proxy instances&#10;private var stage3DManager :
+	Stage3DManager;&#10;private var stage3DProxy : Stage3DProxy;&#10;&#10;/**&#10; * Global initialise function&#10; */&#10;private
+	function init():void&#10;{&#10;&#9;stage.scaleMode = StageScaleMode.NO_SCALE;&#10;&#9;stage.align =
+	StageAlign.TOP_LEFT;&#10;&#10;&#9;initProxies();&#10;}&#10;&#10;/**&#10; * Initialise the Stage3D proxies&#10; */&#10;private
+	function initProxies():void&#10;{&#10;&#9;// Define a new Stage3DManager for the Stage3D objects&#10;&#9;stage3DManager
+	= Stage3DManager.getInstance(stage);&#10;&#10;&#9;// Create a new Stage3D proxy to contain the separate views&#10;&#9;stage3DProxy
+	= stage3DManager.getFreeStage3DProxy();&#10;&#9;stage3DProxy.addEventListener(Stage3DEvent.CONTEXT3D_CREATED,
+	onContextCreated);&#10;&#9;stage3DProxy.antiAlias = 8;&#10;&#9;stage3DProxy.color = 0x0;&#10;}&#10;</pre>
+		</div>
+		<p> </p>
+		<p> Stage3DManager works as a singleton so to access it we have to explicitly request the singleton instance using the getInstance() method. Using the Stage3DManager instance, we can then make a request to allocate the next available Stage3D for our rendering. This isn't an immediate process so we need to wait until one is allocated for our purposes. This is done by listening for the Stage3DEvent.CONTEXT3D_CREATED event.</p>
+		<p> While we are working with the Stage3DProxy, this is as good a time as any to set some of the properties such as the overral antialias level and background colour.</p>
+	</section>
+	<section>
+		<h3>Building the layers</h3>
+		<p> When the Stage3DEvent.CONTEXT3D_CREATED event is fired, we are ready to carry on and construct our layers for rendering.</p>
+		<p> As mentioned, in this example we'll have one Away3D scene and two Starling scenes. Rather than focusing on the contents of the scenes, I'll detail what's required for setting each one up in preparation for layered rendering.</p>
+		<p> </p>
+
+		<div class="preBox"><pre class="brush: as3">&#10;private function onContextCreated(event : Stage3DEvent) : void {&#10;&#9;initAway3D();&#10;&#9;initStarling();&#10;&#9;initMaterials();&#10;&#9;initObjects();&#10;&#9;initButton();&#10;&#9;initListeners();&#10;&#9;initListeners();&#10;}&#10;&#10;/**&#10;
+	* Initialise the Away3D views&#10; */&#10;private function initAway3D() : void&#10;{&#10;&#9;// Create the first
+	Away3D view which holds the cube objects.&#10;&#9;away3dView = new View3D();&#10;&#9;away3dView.stage3DProxy =
+	stage3DProxy;&#10;&#9;away3dView.shareContext = true;&#10;&#10;&#9;hoverController = new
+	HoverController(away3dView.camera, null, 45, 30, 1200, 5, 89.999);&#10;&#10;&#9;addChild(away3dView);&#10;&#10;&#9;addChild(new
+	AwayStats(away3dView));&#10;}&#10;&#10;/**&#10; * Initialise the Starling sprites&#10; */&#10;private function
+	initStarling() : void&#10;{&#10;&#9;//Create the Starling scene to add the background wall/fireplace. This is
+	positioned on top of the floor scene starting at the top of the screen. It slightly covers the wooden floor layer to
+	avoid any gaps appearing.&#10;&#9;starlingStars = new Starling(StarlingStarsSprite, stage, stage3DProxy.viewPort,
+	stage3DProxy.stage3D);&#10;&#10;&#9;//Create the Starling scene to add the background wall/fireplace. This is
+	positioned on top of the floor scene starting at the top of the screen. It slightly covers the wooden floor layer to
+	avoid any gaps appearing.&#10;&#9;starlingCheckerboard = new Starling(StarlingCheckerboardSprite, stage,
+	stage3DProxy.viewPort, stage3DProxy.stage3D);&#10;}&#10;</pre>
+		</div>
+		<p> </p> <p> The
+		<em>onContextCreated</em> method goes through the typical setup to define the 3D scene, objects, materials, event listeners and also the Starling setup.</p>
+		<p> In the
+			<em>initAway3D</em> method, we construct the View3D object as usual for the Away3D scene, however, we set the
+			<em>.stage3DProxy</em> property to our shared Stage3DProxy instance and we also instruct the View3D to work with a shared Stage3D by setting
+			<em>.shareContext=true</em>.</p> <p> Similarly the
+		<em>initStarling</em> method creates the Starling scenes. The requirement of each scene is to pass a reference to the Starling sprite scene, the Stage and in the case of a shared Stage3D, we also pass a Rectangle defining the size of the view port and also a reference to our Stage3D instance. Fortunately, both of these are accessible directly from the Stage3DProxy instance as
+		<em>.viewPort</em> and <em>.stage3D</em> properties.</p> <p>
+		<em>NOTE: With Starling, if you wish to move or resize the viewport of a Sprite, it is necessary to manage the viewport Rectangle externally to Starling, as referencing the Starling.viewPort property returns a clone rather than the original object reference. Setting it externally, passing it on the constructor and changing the properties of the external rectangle updates Starling rendering correctly.</em></p>
+		<p> Each Away3D scene and Starling sprite layer now has a reference to the shared Stage3D instance. The rest of the scene setup continues as normal. As you can see in the complete demo above, it allows you to cycle through, swapping the layers around. Initially, at the back (the first rendered layer) is a Starling layer that rotates a checkerboard pattern. On top of this is the Away3D scene that has 5 cubes arranged in a cross formation, on a wireframe grid. Finally, the top layer, which is rendered last, is the Starling particle effect.</p>
+	</section>
+	<section>
+		<h3>Rendering</h3>
+		<p> Within Stage3D frameworks, there are certain functions in the rendering process which need disabling when the Stage3D is being shared. In an
+			<strong>extremely simplified</strong> view, for the purposes of this tutorial, the rendering of a scene requires the scene to be cleared -
+			<em>clear()</em>, the elements rendered - <em>drawTriangles()</em> and finally scene displayed -
+			<em>present()</em>. It is this 'clearing' and 'displaying' of each framework that stops Stage3Ds being shared, by default.</p>
+		<figure><a href="http://away3d.com/images/uploads/integrationrender1.gif"
+				rel="shadowbox[slideshow]"><img
+				class="staticFigure" alt="Simplified Stage3D rendering process"
+				src="http://away3d.com/images/uploads/integrationrender1.gif"
+				style="width: 540px; height: 335px; "/></a></figure>
+
+		<p> Now that Away3D and Starling have been instructed to use a shared Stage3D instance, they only need to consider the rendering part of the process, leaving the clearing and presenting responsibility of the Stage3DProxy object.</p>
+
+		<p> There are two rendering options available through the Stage3DProxy class which are very similar but provide different control of the clearing and presenting. The manual approach requires you to explicitly call the Stage3DProxy's
+			<em>.clear()</em> and
+			<em>.present()</em> methods around your layer rendering calls whereas the more automatic approach handles that for you. Both are described here.</p>
+
+		<figure><a href="http://away3d.com/images/uploads/integrationrender2.gif"
+				rel="shadowbox[slideshow]"><img
+				class="staticFigure" alt="Shared Stage3D layered rendering process"
+				src="http://away3d.com/images/uploads/integrationrender2.gif"
+				style="width: 540px; height: 352px; "/></a></figure>
+	</section>
+	<section>
+		<h3>Taking control - the manual approach</h3>
+		<p> </p>
+
+		<div class="preBox"><pre class="brush: as3">&#10;/**&#10; * Set up the rendering processing event listeners&#10; */&#10;private
+	function initListeners() : void {&#10;&#9;stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);&#10;}&#10;&#10;/**&#10;
+	* The main rendering loop&#10; */&#10;private function onEnterFrame(event : Event) : void {&#10;&#10;&#9;// Clear
+	the Context3D object&#10;&#9;stage3DProxy.clear();&#10;&#10;&#9;// Render the Starling animation layer&#10;&#9;starlingCheckerboard.nextFrame();&#10;&#10;&#9;//
+	Render the Away3D layer&#10;&#9;away3dView.render();&#10;&#10;&#9;// Render the Starling stars layer&#10;&#9;starlingStars.nextFrame();&#10;&#10;&#9;//
+	Present the Context3D object to Stage3D&#10;&#9;stage3DProxy.present();&#10;}&#10;</pre>
+		</div>
+		<p> </p> <p> In this piece of code, we listen for an <i>ENTER_FRAME</i> event on the
+		<strong>stage</strong> instance, then within the listener method, we call the
+		<i>stage3DProxy.clear();</i> method then render each layer in turn, followed by the
+		<i>stage3DProxy.present();</i>. This gives you complete control of how the layers are rendered and when/if the clear and present calls need to be made. If nothing is changing then the display need not be re-rendered.</p>
+	</section>
+	<section>
+		<h3>The easy life - the automatic approach</h3>
+		<p> </p>
+
+		<div class="preBox"><pre class="brush: as3">&#10;/**&#10; * Set up the rendering processing event listeners&#10; */&#10;private
+	function initListeners() : void {&#10;&#9;stage3DProxy.addEventListener(Event.ENTER_FRAME, onEnterFrame);&#10;}&#10;&#10;/**&#10;
+	* The main rendering loop&#10; */&#10;private function onEnterFrame(event : Event) : void {&#10;&#10;&#9;// Render
+	the Starling animation layer&#10;&#9;starlingCheckerboard.nextFrame();&#10;&#10;&#9;// Render the Away3D layer&#10;&#9;away3dView.render();&#10;&#10;&#9;//
+	Render the Starling stars layer&#10;&#9;starlingStars.nextFrame();&#10;}&#10;</pre>
+		</div>
+		<p> </p> <p> This approach is subtly different in that the <em>ENTER_FRAME</em> event listener is added to the
+		<strong>Stage3DProxy</strong> object, rather than the stage. As such, it internally manages when the
+		<em>clear()</em> and
+		<em>present()</em> calls are performed, leaving you to decide on how the rendering is done. In the above code, you can see that only the layer render calls are performed in the event listener method.</p>
+		<p> The full source for the demo can be downloaded from the following link :</p> <p> <a
+			href="http://away3d.com/examples/away3d_4_0/Intermediate_One_Away3D_Two_Starling_Layers/Intermediate_One_Away3D_Two_Starling_Layers.zip">Example Sources</a></p>
+		<p> Greg Caldwell - The Away3D Team</p>
+	</section>
+</article>
+</body>
+</html>

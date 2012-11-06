@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"> 
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <style type="text/css" media="screen"> 
+            html, body
+            {
+                height:100%;
+            }
+
+            body
+            {
+                margin: 0;
+                padding: 0;
+                overflow: auto;
+                text-align: center; 
+                background-color: #ffffff;
+            }
+
+            object:focus
+            {
+                outline:none;
+            }
+
+            #flashContent
+            {
+                display:none;
+            }
+        </style>
+        <script type="text/javascript" src="swfobject.js"></script>
+        <script type="text/javascript">
+            var swfVersionStr = "11.0.0";
+            var flashvars = {
+		awd: "onkba.awd",
+		bgcolor: "2f2f2f"
+            };
+            var params = {
+                quality: 'high',
+                bgcolor: '#ffffff',
+                wmode: 'direct'
+            };
+            attributes = {
+                id: 'AWDViewer',
+                name: 'AWDViewer'
+            };
+
+            swfobject.embedSWF(
+		"viewer.swf", "flashContent", 
+                "100%", "100%", 
+                swfVersionStr, null, 
+                flashvars, params, attributes);
+
+            swfobject.createCSS("#flashContent", "display:block;text-align:left;");
+        </script>
+    </head>
+    <body>
+        <div id="flashContent">
+            <p>
+                To view this page ensure that Adobe Flash Player version 
+                11.1.0 or greater is installed. 
+            </p>
+        </div>
+   </body>
+</html>
