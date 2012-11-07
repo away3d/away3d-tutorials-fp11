@@ -1,18 +1,4 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-	<title>Listing 2</title>
-	<!-- AS3 Syntax Highlighter -->
-	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
-	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
-	<link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
-	<script type="text/javascript">SyntaxHighlighter.all();</script>
-</head>
-
-<body style="background: white; font-family: Helvetica">
-
-<pre class="brush: as3;">
-package tutorials.picking.basics
+package li.picking.overview.src
 {
 
 	import away3d.entities.Mesh;
@@ -21,9 +7,9 @@ package tutorials.picking.basics
 	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.SphereGeometry;
 
-	public class Listing02 extends ListingBase
+	public class PickingTutorialListing01 extends PickingTutorialListingBase
 	{
-		public function Listing02() {
+		public function PickingTutorialListing01() {
 		 	super();
 		}
 
@@ -32,19 +18,17 @@ package tutorials.picking.basics
 
 		override protected function onSetup():void {
 
-			_cameraController.panAngle = -63;
-			_cameraController.tiltAngle = 10;
+			_cameraController.panAngle = 20;
+			_cameraController.tiltAngle = 20;
 
 			// Init materials.
 			_activeMaterial = new ColorMaterial( 0xFF0000 );
 			_activeMaterial.lightPicker = _lightPicker;
 			_inactiveMaterial = new ColorMaterial( 0xCCCCCC );
 			_inactiveMaterial.lightPicker = _lightPicker;
-			var disabledMaterial:ColorMaterial = new ColorMaterial( 0x666666 );
-			disabledMaterial.lightPicker = _lightPicker;
 
 			// Create 2 objects.
-			var cube:Mesh = new Mesh( new CubeGeometry(), disabledMaterial );
+			var cube:Mesh = new Mesh( new CubeGeometry(), _inactiveMaterial );
 			cube.x = -75;
 			_view.scene.addChild( cube );
 			var sphere:Mesh = new Mesh( new SphereGeometry(), _inactiveMaterial );
@@ -56,8 +40,8 @@ package tutorials.picking.basics
 			sphere.mouseEnabled = true;
 
 			// Attach mouse event listeners.
-//			cube.addEventListener( MouseEvent3D.MOUSE_OVER, onObjectMouseOver ); // By attaching no listeners to the object, it simply occludes picking ( if mouseEnabled = true ).
-//			cube.addEventListener( MouseEvent3D.MOUSE_OUT, onObjectMouseOut );
+			cube.addEventListener( MouseEvent3D.MOUSE_OVER, onObjectMouseOver );
+			cube.addEventListener( MouseEvent3D.MOUSE_OUT, onObjectMouseOut );
 			sphere.addEventListener( MouseEvent3D.MOUSE_OVER, onObjectMouseOver );
 			sphere.addEventListener( MouseEvent3D.MOUSE_OUT, onObjectMouseOut );
 
@@ -72,6 +56,3 @@ package tutorials.picking.basics
 		}
 	}
 }
-</pre>
-</body>
-</html>

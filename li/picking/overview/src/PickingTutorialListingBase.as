@@ -5,11 +5,11 @@ package li.picking.overview.src
 
 	import li.base.ListingBase;
 
-	public class PickingOverviewListingBase extends ListingBase
+	public class PickingTutorialListingBase extends ListingBase
 	{
 		private var _light:PointLight;
 
-		public function PickingOverviewListingBase() {
+		public function PickingTutorialListingBase() {
 			super();
 		}
 

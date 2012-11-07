@@ -1,18 +1,4 @@
-<!DOCTYPE HTML>
-<html>
-	<head>
-	<title>Listing 6</title>
-	<!-- AS3 Syntax Highlighter -->
-	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
-	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
-	<link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
-	<script type="text/javascript">SyntaxHighlighter.all();</script>
-</head>
-
-<body style="background: white; font-family: Helvetica">
-
-<pre class="brush: as3;">
-package tutorials.picking.basics
+package li.picking.overview.src
 {
 
 	import away3d.core.pick.PickingColliderType;
@@ -36,10 +22,10 @@ package tutorials.picking.basics
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 
-	public class Listing06 extends ListingBase
+	public class PickingTutorialListing06 extends PickingTutorialListingBase
 	{
 		// Assets.
-		[Embed(source="../../embeds/head/head.obj", mimeType="application/octet-stream")]
+		[Embed(source="../../../../embeds/head/head.obj", mimeType="application/octet-stream")]
 		private var HeadAsset:Class;
 
 		private const TEXTURE_SIZE:uint = 2048;
@@ -52,7 +38,7 @@ package tutorials.picking.basics
 		private var _locationTracer:Mesh;
 		private var _normalTracer:SegmentSet;
 
-		public function Listing06() {
+		public function PickingTutorialListing06() {
 		 	super();
 		}
 
@@ -101,7 +87,7 @@ package tutorials.picking.basics
 			var bmd:BitmapData = new BitmapData( TEXTURE_SIZE, TEXTURE_SIZE, false, 0xFF0000 );
 			bmd.perlinNoise( 50, 50, 8, 1, false, true, 7, true );
 			_bitmap = new Bitmap( bmd );
-			_bitmap.scaleX = _bitmap.scaleY = 0.05;
+			_bitmap.scaleX = _bitmap.scaleY = 0.1;
 			addChildAt( _bitmap, 1 );
 			_texture = new BitmapTexture( bmd );
 			_material = new TextureMaterial( _texture );
@@ -165,7 +151,3 @@ package tutorials.picking.basics
 		}
 	}
 }
-
-</pre>
-</body>
-</html>

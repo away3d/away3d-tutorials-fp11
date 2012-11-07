@@ -11,9 +11,9 @@ package li.picking.overview.src
 	import flash.events.KeyboardEvent;
 	import flash.text.TextField;
 
-	public class PickingOverviewListing03 extends PickingOverviewListingBase
+	public class PickingTutorialListing03 extends PickingTutorialListingBase
 	{
-		public function PickingOverviewListing03() {
+		public function PickingTutorialListing03() {
 		 	super();
 		}
 

@@ -25,9 +25,9 @@ package li.picking.overview.src
 	import flash.geom.Vector3D;
 	import flash.text.TextField;
 
-	public class PickingOverviewListing04 extends PickingOverviewListingBase
+	public class PickingTutorialListing04 extends PickingTutorialListingBase
 	{
-		public function PickingOverviewListing04() {
+		public function PickingTutorialListing04() {
 			super();
 		}
 

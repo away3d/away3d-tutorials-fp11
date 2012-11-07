@@ -7,9 +7,9 @@ package li.picking.overview.src
 	import away3d.primitives.CubeGeometry;
 	import away3d.primitives.SphereGeometry;
 
-	public class PickingOverviewListing02 extends PickingOverviewListingBase
+	public class PickingTutorialListing02 extends PickingTutorialListingBase
 	{
-		public function PickingOverviewListing02() {
+		public function PickingTutorialListing02() {
 		 	super();
 		}
 
