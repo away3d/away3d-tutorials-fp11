@@ -4,6 +4,7 @@ package li.materials.globe.src
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.entities.Sprite3D;
+	import away3d.lights.PointLight;
 	import away3d.materials.TextureMaterial;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
@@ -17,7 +18,7 @@ package li.materials.globe.src
 
 	import li.base.ListingBase;
 
-	public class GlobeListing02 extends ListingBase
+	public class GlobeMaterialsTutorialListing03 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -52,7 +53,7 @@ package li.materials.globe.src
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
 
-		public function GlobeListing02() {
+		public function GlobeMaterialsTutorialListing03() {
 			super();
 		}
 
@@ -65,19 +66,27 @@ package li.materials.globe.src
 		}
 
 		private function createSun():void {
+			// Light object.
+			var light:PointLight = new PointLight();
+			light.ambient = 0.25;
+			light.diffuse = 2;
+			light.specular = 0.5;
+			_lightPicker.lights = [ light ];
 			// Material.
 			var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( SunTexture ) );
 			var sunMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
 			sunMaterial.alphaBlending = true;
 			// Geometry.
 			var sun:Sprite3D = new Sprite3D( sunMaterial, 5000, 5000 );
-			sun.x = 10000;
+			sun.x = light.x = 10000;
 			_view.scene.addChild( sun );
 		}
 
 		private function createEarth():void {
 			// Material.
 			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
+			earthMaterial.gloss = 5;
+			earthMaterial.lightPicker = _lightPicker;
 			// Container.
 			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
@@ -90,6 +99,8 @@ package li.materials.globe.src
 		private function createMoon():void {
 			// Material.
 			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
+			moonMaterial.gloss = 5;
+			moonMaterial.lightPicker = _lightPicker;
 			// Container.
 			_moon = new ObjectContainer3D();
 			_moon.rotationY = rand( 0, 360 );

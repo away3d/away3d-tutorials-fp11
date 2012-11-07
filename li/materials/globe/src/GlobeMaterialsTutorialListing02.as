@@ -4,10 +4,7 @@ package li.materials.globe.src
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.entities.Sprite3D;
-	import away3d.lights.PointLight;
 	import away3d.materials.TextureMaterial;
-	import away3d.materials.methods.FresnelSpecularMethod;
-	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
 	import away3d.textures.BitmapCubeTexture;
@@ -20,7 +17,7 @@ package li.materials.globe.src
 
 	import li.base.ListingBase;
 
-	public class GlobeListing05 extends ListingBase
+	public class GlobeMaterialsTutorialListing02 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -29,18 +26,6 @@ package li.materials.globe.src
 		// Diffuse map for the Moon's surface.
 		[Embed(source="../../../../embeds/solar/moon.jpg")]
 		public static var MoonSurfaceDiffuse:Class;
-
-		// Normal map for globe.
-		[Embed(source="../../../../embeds/solar/earth_normals.png")]
-		public static var EarthSurfaceNormals:Class;
-
-		// Specular map for globe.
-		[Embed(source="../../../../embeds/solar/earth_specular.jpg")]
-		public static var EarthSurfaceSpecular:Class;
-
-		// Night diffuse map for globe.
-		[Embed(source="../../../../embeds/solar/earth_ambient.jpg")]
-		public static var EarthSurfaceNight:Class;
 
 		// Skybox textures.
 		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
@@ -67,7 +52,7 @@ package li.materials.globe.src
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
 
-		public function GlobeListing05() {
+		public function GlobeMaterialsTutorialListing02() {
 			super();
 		}
 
@@ -80,34 +65,19 @@ package li.materials.globe.src
 		}
 
 		private function createSun():void {
-			// Light object.
-			var light:PointLight = new PointLight();
-			light.diffuse = 2;
-			_lightPicker.lights = [ light ];
 			// Material.
 			var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( SunTexture ) );
 			var sunMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
 			sunMaterial.alphaBlending = true;
 			// Geometry.
 			var sun:Sprite3D = new Sprite3D( sunMaterial, 5000, 5000 );
-			sun.x = light.x = 10000;
+			sun.x = 10000;
 			_view.scene.addChild( sun );
 		}
 
 		private function createEarth():void {
-			// Fresnel specular method for earth.
-			var earthFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
-			earthFresnelSpecularMethod.fresnelPower = 1;
-			earthFresnelSpecularMethod.normalReflectance = 0.1;
-			earthFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
 			// Material.
 			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
-			earthMaterial.specularMethod = earthFresnelSpecularMethod;
-			earthMaterial.normalMap = Cast.bitmapTexture( EarthSurfaceNormals );
-			earthMaterial.specularMap = Cast.bitmapTexture( EarthSurfaceSpecular );
-			earthMaterial.ambientTexture = Cast.bitmapTexture( EarthSurfaceNight );
-			earthMaterial.gloss = 5;
-			earthMaterial.lightPicker = _lightPicker;
 			// Container.
 			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
@@ -118,18 +88,8 @@ package li.materials.globe.src
 		}
 
 		private function createMoon():void {
-			// Fresnel specular method for moon.
-			var moonFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
-			moonFresnelSpecularMethod.fresnelPower = 1;
-			moonFresnelSpecularMethod.normalReflectance = 0.1;
-			moonFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
 			// Material.
 			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
-			moonMaterial.specularMethod = moonFresnelSpecularMethod;
-			moonMaterial.gloss = 5;
-			moonMaterial.ambient = 0.25;
-			moonMaterial.specular = 0.5;
-			moonMaterial.lightPicker = _lightPicker;
 			// Container.
 			_moon = new ObjectContainer3D();
 			_moon.rotationY = rand( 0, 360 );

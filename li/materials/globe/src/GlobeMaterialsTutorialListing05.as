@@ -20,7 +20,7 @@ package li.materials.globe.src
 
 	import li.base.ListingBase;
 
-	public class GlobeListing06 extends ListingBase
+	public class GlobeMaterialsTutorialListing05 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -41,10 +41,6 @@ package li.materials.globe.src
 		// Night diffuse map for globe.
 		[Embed(source="../../../../embeds/solar/earth_ambient.jpg")]
 		public static var EarthSurfaceNight:Class;
-
-		// Diffuse map for clouds.
-		[Embed(source="../../../../embeds/solar/earth_clouds.jpg")]
-		public static var EarthSkyDiffuse:Class;
 
 		// Skybox textures.
 		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
@@ -71,7 +67,7 @@ package li.materials.globe.src
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
 
-		public function GlobeListing06() {
+		public function GlobeMaterialsTutorialListing05() {
 			super();
 		}
 
@@ -99,35 +95,26 @@ package li.materials.globe.src
 		}
 
 		private function createEarth():void {
-			// Fresnel specular method for earth surface.
+			// Fresnel specular method for earth.
 			var earthFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
 			earthFresnelSpecularMethod.fresnelPower = 1;
 			earthFresnelSpecularMethod.normalReflectance = 0.1;
 			earthFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
-			// Material for earth surface.
-			var earthSurfaceMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
-			earthSurfaceMaterial.specularMethod = earthFresnelSpecularMethod;
-			earthSurfaceMaterial.normalMap = Cast.bitmapTexture( EarthSurfaceNormals );
-			earthSurfaceMaterial.specularMap = Cast.bitmapTexture( EarthSurfaceSpecular );
-			earthSurfaceMaterial.ambientTexture = Cast.bitmapTexture( EarthSurfaceNight );
-			earthSurfaceMaterial.gloss = 5;
-			earthSurfaceMaterial.lightPicker = _lightPicker;
-			// Material for sky.
-			var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( EarthSkyDiffuse ) );
-			var earthCloudMaterial:TextureMaterial = new TextureMaterial( new BitmapTexture( bitmapData ) );
-			earthCloudMaterial.alphaBlending = true;
-			earthCloudMaterial.lightPicker = _lightPicker;
-			earthCloudMaterial.specular = 0;
+			// Material.
+			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
+			earthMaterial.specularMethod = earthFresnelSpecularMethod;
+			earthMaterial.normalMap = Cast.bitmapTexture( EarthSurfaceNormals );
+			earthMaterial.specularMap = Cast.bitmapTexture( EarthSurfaceSpecular );
+			earthMaterial.ambientTexture = Cast.bitmapTexture( EarthSurfaceNight );
+			earthMaterial.gloss = 5;
+			earthMaterial.lightPicker = _lightPicker;
 			// Container.
 			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
 			_view.scene.addChild( _earth );
-			// Earth surface geometry.
-			var earthSurface:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), earthSurfaceMaterial );
+			// Surface geometry.
+			var earthSurface:Mesh = new Mesh( new SphereGeometry( 100, 200, 100 ), earthMaterial );
 			_earth.addChild( earthSurface );
-			// Earth cloud geometry.
-			var earthSky:Mesh = new Mesh( new SphereGeometry( 102, 200, 100 ), earthCloudMaterial );
-			_earth.addChild( earthSky );
 		}
 
 		private function createMoon():void {

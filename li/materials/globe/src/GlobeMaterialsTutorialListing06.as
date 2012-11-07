@@ -1,12 +1,10 @@
 package li.materials.globe.src
 {
 
-	import away3d.arcane;
 	import away3d.containers.ObjectContainer3D;
 	import away3d.entities.Mesh;
 	import away3d.entities.Sprite3D;
 	import away3d.lights.PointLight;
-	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
 	import away3d.materials.methods.FresnelSpecularMethod;
 	import away3d.materials.methods.SpecularShadingModel;
@@ -18,14 +16,11 @@ package li.materials.globe.src
 
 	import flash.display.BitmapData;
 	import flash.display.BitmapDataChannel;
-	import flash.display.BlendMode;
 	import flash.geom.Point;
 
 	import li.base.ListingBase;
 
-	use namespace arcane;
-
-	public class GlobeListing07 extends ListingBase
+	public class GlobeMaterialsTutorialListing06 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -76,7 +71,7 @@ package li.materials.globe.src
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
 
-		public function GlobeListing07() {
+		public function GlobeMaterialsTutorialListing06() {
 			super();
 		}
 
@@ -123,11 +118,6 @@ package li.materials.globe.src
 			earthCloudMaterial.alphaBlending = true;
 			earthCloudMaterial.lightPicker = _lightPicker;
 			earthCloudMaterial.specular = 0;
-			// Material for atmosphere.
-			var atmosphereMaterial:ColorMaterial = new ColorMaterial( 0x1671cc );
-			atmosphereMaterial.blendMode = BlendMode.ADD;
-			atmosphereMaterial.lightPicker = _lightPicker;
-			atmosphereMaterial.gloss = 5;
 			// Container.
 			_earth = new ObjectContainer3D();
 			_earth.rotationY = rand( 0, 360 );
@@ -138,10 +128,6 @@ package li.materials.globe.src
 			// Earth cloud geometry.
 			var earthSky:Mesh = new Mesh( new SphereGeometry( 102, 200, 100 ), earthCloudMaterial );
 			_earth.addChild( earthSky );
-			// Earth atmosphere geometry.
-			var earthAtmosphere:Mesh = new Mesh( new SphereGeometry( 110, 200, 100 ), atmosphereMaterial );
-			earthAtmosphere.scaleX = -1;
-			_earth.addChild( earthAtmosphere );
 		}
 
 		private function createMoon():void {

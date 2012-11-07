@@ -10,7 +10,7 @@ package li.materials.globe.src
 
 	import li.base.ListingBase;
 
-	public class GlobeListing01 extends ListingBase
+	public class GlobeMaterialsTutorialListing01 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -23,7 +23,7 @@ package li.materials.globe.src
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
 
-		public function GlobeListing01() {
+		public function GlobeMaterialsTutorialListing01() {
 			super();
 		}
 

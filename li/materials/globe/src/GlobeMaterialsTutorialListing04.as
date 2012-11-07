@@ -18,7 +18,7 @@ package li.materials.globe.src
 
 	import li.base.ListingBase;
 
-	public class GlobeListing03 extends ListingBase
+	public class GlobeMaterialsTutorialListing04 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -27,6 +27,18 @@ package li.materials.globe.src
 		// Diffuse map for the Moon's surface.
 		[Embed(source="../../../../embeds/solar/moon.jpg")]
 		public static var MoonSurfaceDiffuse:Class;
+
+		// Normal map for globe.
+		[Embed(source="../../../../embeds/solar/earth_normals.png")]
+		public static var EarthSurfaceNormals:Class;
+
+		// Specular map for globe.
+		[Embed(source="../../../../embeds/solar/earth_specular.jpg")]
+		public static var EarthSurfaceSpecular:Class;
+
+		// Night diffuse map for globe.
+		[Embed(source="../../../../embeds/solar/earth_ambient.jpg")]
+		public static var EarthSurfaceNight:Class;
 
 		// Skybox textures.
 		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
@@ -53,7 +65,7 @@ package li.materials.globe.src
 		private var _earth:ObjectContainer3D;
 		private var _moon:ObjectContainer3D;
 
-		public function GlobeListing03() {
+		public function GlobeMaterialsTutorialListing04() {
 			super();
 		}
 
@@ -68,9 +80,7 @@ package li.materials.globe.src
 		private function createSun():void {
 			// Light object.
 			var light:PointLight = new PointLight();
-			light.ambient = 0.25;
 			light.diffuse = 2;
-			light.specular = 0.5;
 			_lightPicker.lights = [ light ];
 			// Material.
 			var bitmapData:BitmapData = blackToTransparent( Cast.bitmapData( SunTexture ) );
@@ -85,6 +95,9 @@ package li.materials.globe.src
 		private function createEarth():void {
 			// Material.
 			var earthMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
+			earthMaterial.normalMap = Cast.bitmapTexture( EarthSurfaceNormals );
+			earthMaterial.specularMap = Cast.bitmapTexture( EarthSurfaceSpecular );
+			earthMaterial.ambientTexture = Cast.bitmapTexture( EarthSurfaceNight );
 			earthMaterial.gloss = 5;
 			earthMaterial.lightPicker = _lightPicker;
 			// Container.
@@ -100,6 +113,8 @@ package li.materials.globe.src
 			// Material.
 			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
 			moonMaterial.gloss = 5;
+			moonMaterial.ambient = 0.25;
+			moonMaterial.specular = 0.5;
 			moonMaterial.lightPicker = _lightPicker;
 			// Container.
 			_moon = new ObjectContainer3D();

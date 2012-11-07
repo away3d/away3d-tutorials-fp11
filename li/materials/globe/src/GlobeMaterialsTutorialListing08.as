@@ -31,7 +31,7 @@ package li.materials.globe.src
 
 	use namespace arcane;
 
-	public class GlobeListing08 extends ListingBase
+	public class GlobeMaterialsTutorialListing08 extends ListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
@@ -83,7 +83,7 @@ package li.materials.globe.src
 		private var _moon:ObjectContainer3D;
 		private var _atmosphereDiffuseMethod:CompositeDiffuseMethod;
 
-		public function GlobeListing08() {
+		public function GlobeMaterialsTutorialListing08() {
 			super();
 		}
 
