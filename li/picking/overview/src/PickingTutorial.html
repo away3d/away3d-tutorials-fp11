@@ -22,29 +22,31 @@
 <aside>
 	<span class="requirement">User Level</span>
 	Beginner-Intermediate
+
 	<span class="requirement">Prerequisite knowledge:</span>
 	Good ActionScript 3 programming experience with Flash Builder or similar integrated development environment (IDE) is recommended along with a basic understanding of Away3D 4.
+
 	<span class="requirement">Required tools</span>
 	Flash Builder or similar IDE.
+
 	<span class="requirement">Sources</span>
-	<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/li/picking/overview/src">Complete sources.</a>
+	<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/li/picking/overview/src" target="_blank">Complete sources.</a>
+
 	<span class="requirement">Downloads</span>
 	--- add downloadable zip ---
 </aside>
 The Away3D Picking tutorial will introduce you to mouse interactivity in Away3D 4.x.
 <h4>Contents:</h4>
-<nav>
-	<ul>
-		<li><a href="#intro">Introduction</a></li>
-		<li><a href="#hello">Hello Picking</a></li>
-		<li><a href="#mesh">Entity Properties</a></li>
-		<li><a href="#view">View Properties</a></li>
-		<li><a href="#uv">UV Painting</a></li>
-		<li><a href="#conclusion">Conclusion</a></li>
-	</ul>
-</nav>
+<nav><ul>
+	<li><a href="#intro">Introduction</a></li>
+	<li><a href="#hello">Hello Picking</a></li>
+	<li><a href="#mesh">Entity Properties</a></li>
+	<li><a href="#view">View Properties</a></li>
+	<li><a href="#uv">UV Painting</a></li>
+	<li><a href="#conclusion">Conclusion</a></li>
+</ul></nav>
 <section id="intro">
-	<h3>Introduction</h3>
+	<h4>Introduction</h4>
 	<p>Every 3D engine needs to solve a very basic problem: what lies beneath the mouse? This is commonly referred to as
 		<span class="newTerm">Picking</span>. Although this sounds
 		like a simple and straight forward problem, it actually involves non-trivial mathematics, very efficient algorithms,
@@ -57,7 +59,7 @@ The Away3D Picking tutorial will introduce you to mouse interactivity in Away3D 
 		subtleties in order to achieve an efficient implementation in advanced and demanding projects.</p>
 </section>
 <section id="hello">
-	<h3>Hello Picking</h3>
+	<h4>Hello Picking</h4>
 	<p>So lets get right down to business. Have a look at the following example, and it's code, below:</p>
 	<figure>
 		<a href="http://away3d.com/wikicontent/tutorials/li/picking/overview/bin/listing_01/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/picking/overview/images/listing_01.jpg"></a>
@@ -80,10 +82,10 @@ private function onObjectMouseOver( event:MouseEvent3D ):void {
 		Nothing new here. But it is 3D picking though, and things can get more complicated, as stated before, so lets have a look under the hood and see what we find.</p>
 </section>
 <section id="mesh">
-	<h3>Entity Properties</h3>
+	<h4>Entity Properties</h4>
 	<p>Picking in Away3D can be managed by a set of properties within 3D entities. Lets have a look at them.</p>
 	<section id="mouseEnabled">
-		<h3>MouseEnabled</h3>
+		<h5>MouseEnabled</h5>
 		<p>So, what's going on under the hood? The core of 3D picking is casting a ray from the camera, via the mouse on the screen, and into the scene. One method to determine
 			if the mouse is under an object is evaluating what objects are hit by such ray. This involves calculating ray-sphere collisions, ray-aabb collisions, ray-triangle collisions,
 			etc. The most expensive part of this process is finding out if the ray hits the inside of a triangle in a mesh which could, potentially, contain a very high poly count.
@@ -114,7 +116,7 @@ private function onObjectMouseOver( event:MouseEvent3D ):void {
 			picking is so much cheaper in two dimensions.</p>
 	</section>
 	<section id="bounds">
-		<h3>Picking Colliders</h3>
+		<h5>Picking Colliders</h5>
 		<p>You may have noticed on the previous listings that ( after rotating the camera to particular angles ) picking around the sphere is not very accurate.
 			In listing 1 or 2, if you hover
 			the mouse close enough to the sphere, it will trigger a mouse over, even though the mouse is not actually over the object. How lame!</p>
@@ -206,10 +208,10 @@ anObject.pickingCollider = PickingColliderType.BOUNDS_ONLY; // default
 	</section>
 </section>
 <section id="view">
-	<h3>View Properties</h3>
+	<h4>View Properties</h4>
 	<p>As there are per object properties, picking in Away3D also involves global properties. Lets study these now.</p>
 	<section id="shader">
-		<h3>Shader vs. Raycast Mouse Pickers</h3>
+		<h5>Shader vs. Raycast Mouse Pickers</h5>
 		<p>As mentioned before, Away3D offers a completely different approach for picking calculations. So far we have been dealing with the properties of individual
 			objects, you can change the way picking works on a global scale as well.</p>
 		<pre class="brush: as3">view.mousePicker = PickingType.SHADER;</pre>
@@ -269,10 +271,10 @@ anObject.pickingCollider = PickingColliderType.BOUNDS_ONLY; // default
 			by default, and in the case of listing 4, it needs to be enabled so that we can retrieve the location of the mouse event in the scene.</p>
 		<p>Hopefully, Adobe will someday remove the drawToBitmapData() bottleneck and make all our lives easier!</p>
 	</section>
-	<h3>View Properties</h3>
+	<h4>View Properties</h4>
 	<p>Picking is also managed globally via the View3D object. Lets study these properties as well.</p>
 	<section id="raycast">
-		<h3>The Raycast Mouse Pickers</h3>
+		<h5>The Raycast Mouse Pickers</h5>
 		<p>On the previous section, we discussed the difference between the raycast pickers and the shader picker. Its time to
 			talk about the difference between the two raycast mouse pickers, (1) RAYCAST_FIRST_ENCOUNTERED and (2) RAYCAST_BEST_HIT. These
 			are actually the same picker, but with slightly different settings. The differentiation exists for the same reason "best hit"
@@ -324,7 +326,7 @@ anObject.pickingCollider = PickingColliderType.BOUNDS_ONLY; // default
 	</section>
 </section>
 <section id="uv">
-	<h3>UV Painting</h3>
+	<h4>UV Painting</h4>
 	<p>There is one last bit of the picking system it is worth going through. This is simple, but important: MouseEvent3D. The scene position property of MouseEvent3D
 		used in listings 4 and 5 allowed us to position a tracer mesh where
 		the mouse ray collides with the object under it. MouseEvent3D also offers a series of other helpful properties. Lets review them, and use them in
