@@ -17,7 +17,7 @@
 	<link type="text/css" rel="stylesheet" href="http://away3d.com/wikicontent/styles/tutorial.css"/>
 </head>
 <body>
-[[Category:Tutorials::Picking]]
+[[Category:Picking]]
 <article>
 <section id="intro">
 	<h3>Introduction</h3>
@@ -44,7 +44,7 @@
 		</figcaption>
 	</figure>
 	<p>The key parts of the code are:</p>
-    <div class="preBox"><pre class="brush: as3">
+	<div class="preBox"><pre class="brush: as3">
 anObject.mouseEnabled = true;
 anObject.addEventListener( MouseEvent3D.MOUSE_OVER, onObjectMouseOver );
 private function onObjectMouseOver( event:MouseEvent3D ):void {
@@ -105,12 +105,13 @@ private function onObjectMouseOver( event:MouseEvent3D ):void {
 			and collision calculations with its potentially hundreds or thousands or millions of triangles is avoided by default. If you do need more precision, you just need to tell
 			the ray to keep going.
 			You change this using the following property:</p>
-    <div class="preBox"><pre class="brush: as3">
+		<div class="preBox"><pre class="brush: as3">
 anObject.pickingCollider = PickingColliderType.BOUNDS_ONLY; // default
 //anObject.pickingCollider = PickingColliderType.AS3_FIRST_ENCOUNTERED;
 //anObject.pickingCollider = PickingColliderType.AS3_BEST_HIT;
 // etc...
-    </pre></div>
+    </pre>
+		</div>
 		<p>BOUNDS_ONLY is the cheapest picking collider that the engine offers and is accurate enough for more cases than we usually consider. If you want
 			more precision, you just chose a different one:</p>
 		<ol>
@@ -163,14 +164,18 @@ anObject.pickingCollider = PickingColliderType.BOUNDS_ONLY; // default
 			mouse interactivity on many of these objects! Deciding which collider type to use is very important, but a simple task
 			once you understand the basics of each collider type.</p>
 		<p>Hence, to solve our problem on figure one, we could set a different collider to the object:</p>
-		<div class="preBox"><pre class="brush: as3">sphere.pickingCollider = PickingColliderType.AS3_FIRST_ENCOUNTERED;</pre></div>
+		<div class="preBox">
+			<pre class="brush: as3">sphere.pickingCollider = PickingColliderType.AS3_FIRST_ENCOUNTERED;</pre>
+		</div>
 		<p>Or, we could simply change the sphere's bounding volume to a BoundingSphere instead of an AxisAlignedBoundingBox
 			(Away3D sets all bounding volumes to AxisAlignedBoundingBox by default). This would allow us to get the precision we want
 			without the need to enter the volume and perform costly ray triangle collision calculations.
 			Of course, this is a very specific, almost theoretical case, but its important to keep in mind that the core of this picking technique is bounding volumes, and
 			different bounding volume shapes can be very helpful.
 			In code, this is how you change a bounding volume:</p>
-		<div class="preBox"><pre class="brush: as3">sphere.bounds = new BoundingSphere();</pre></div>
+		<div class="preBox">
+			<pre class="brush: as3">sphere.bounds = new BoundingSphere();</pre>
+		</div>
 		<p>Either way we choose to resolve our precision problem, the result can be appreciated in listing 3:</p>
 		<figure>
 			<a href="http://away3d.com/wikicontent/tutorials/li/picking/overview/bin/listing_03/Launcher.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/li/picking/overview/images/listing_03.jpg"></a>
@@ -189,7 +194,9 @@ anObject.pickingCollider = PickingColliderType.BOUNDS_ONLY; // default
 		<h3>Shader vs. Raycast Mouse Pickers</h3>
 		<p>As mentioned before, Away3D offers a completely different approach for picking calculations. So far we have been dealing with the properties of individual
 			objects, you can change the way picking works on a global scale as well.</p>
-		<div class="preBox"><pre class="brush: as3">view.mousePicker = PickingType.SHADER;</pre></div>
+		<div class="preBox">
+			<pre class="brush: as3">view.mousePicker = PickingType.SHADER;</pre>
+		</div>
 		<p>You can choose from the following set of values:</p>
 		<ol>
 			<li>
@@ -239,7 +246,9 @@ anObject.pickingCollider = PickingColliderType.BOUNDS_ONLY; // default
 		<p>Notice how the raycast method does not see the GPU level vertex transformations and instead hits the static "ghost" mesh. Such
 			a problem does not exist for the shader method. Furthermore, the shader based method ignores the ".pickingCollider" property
 			of objects since this property is only relevant for the raycast based method. The shader picker does however care about the object's ".shaderPickingDetails" property</p>
-		<div class="preBox"><pre class="brush: as3">anObject.shaderPickingDetails = true;</pre></div>
+		<div class="preBox">
+			<pre class="brush: as3">anObject.shaderPickingDetails = true;</pre>
+		</div>
 		<p>This property simply asks the shader picker to evaluate not just whether the mouse events exist, but also the data involved in them such as position, normals, etc.
 			The calculation of such information is not free as it is in the raycast approach, so it should only be requested when needed.
 			If set to false, the mouse events will trigger, but some of the event properties will be null or invalid. The value is set to false
