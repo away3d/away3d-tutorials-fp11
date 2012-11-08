@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Writting Tutorials</title>
+	<!-- AS3 Syntax Highlighter -->
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
+	<link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
+	<script type="text/javascript">SyntaxHighlighter.all();</script>
+	<!-- shadow box -->
+	<link rel="stylesheet" type="text/css" href="http://away3d.com/static/shadowBox/shadowbox.css"/>
+	<script type="text/javascript" src="http://away3d.com/static/shadowBox/shadowbox.js"></script>
+	<script type="text/javascript">Shadowbox.init();</script>
+	<!-- Wiki base styles -->
+	<link rel="stylesheet" href="http://away3d.com/themes/wiki_themes/away3d/wiki_styles.css" type="text/css" media="screen" title="Global Styles" charset="utf-8"/>
+	<!-- Styles for tutorials -->
+	<link type="text/css" rel="stylesheet" href="http://away3d.com/wikicontent/styles/tutorial.css"/>
+</head>
+<body>
+<div class="tutorialMetadata">[[Category:Community]]</div>
+<article>
+This article will explain how to publish tutorials on the Away3D site, and which guidelines to follow to ensure the site's content is consistent.
+<section>
+	<h4>User Access</h4>
+	If you are a registered away3d.com user, you can email the Away3D team at <a href="mailto:info@away3d.com?subject=Tutorial Submission">info@away3d.com</a> and request that you are granted privileges for publishing articles in our tutorials wiki. Once this is done, you can create a new tutorial by typing the name of the article you want to create in the "Find or Create Tutorial" search box on the top-right of this page. If a page named like that does not previously exist, you should see an edit button. Once you press it, you enter edit mode for the article and will be able to submit your tutorial.
+</section>
+<section>
+	<h4>Tutorial Writing Guidelines</h4>
+	The following sections in this article will enumerate the guidelines to follow when writing articles for the tutorials wiki.
+	<section>
+		<h4>Using Other Tutorials as Templates</h4>
+		The first thing you should do is enter edit mode for one of the older tutorials and extract its html code. This will show you a general structure to follow including css styling, usage of swf demos within figure elements, structure of sections, etc. Having the source of one of such tutorials should be of great help while you are developing your own.
+	</section>
+	<section>
+		<h4>No p's</h4>
+		Since this is a wiki, there is no need to use html p elements. The white space in whatever you enter in the edit window will be maintained, meaning that you can use line breaks to specify paragraphs and should not manually split lines within a paragraph.
+	</section>
+	<section>
+		<h4>Sections and Navigation</h4>
+		Have a look at how older tutorials put content within sections and have a nav element on top in order to quickly see and navigate to the sections within the tutorial.
+	</section>
+	<section>
+		<h4>Aside</h4>
+		If you see the source of one of the older tutorials, you will see an aside section that specifies the difficulty of the article, requirements etc. This is an important section of your article and is required. This section should include a link to the sources of the tutorial on github as well as a downloadable zip file. More on the sources section.
+	</section>
+	<section>
+		<h4>Sources</h4>
+		You can embed code snippets in the article using the appropriate pre tag ( see older tutorials for how to link it to syntax highlighter ). When listing entire classes or demos, you should provide a link to the file in github.com. To upload the files to this repository, please contact the Away3D team who will upload it for you or give you write access to the repository.
+	</section>
+	<section>
+		<h4>Special Terms and Code</h4>
+		See how older tutorials use the code html tag and styling for dealing with words that refer to new concepts or language variables.
+	</section>
+	<section>
+		<h4>Demos</h4>
+		All swf demos are image links within figure html tags with related captions. The caption includes a description of the demo and a link to its sources. The image triggers a shadowbox overlay that contains the demo. See the code on an older tutorial for this setup and please pay attention to the styling of the image, its size, and the size of the demo.
+	</section>
+	<section>
+		<h4>BBCode</h4>
+		Notice how at the start of articles there is a div with class "tutorialMetadata" that specifies the category of your tutorial. If you do not include this, your article will not be categorized and will be more difficult to find. You can also use BBCode tags to link to other pages in the wiki. Follow <a href="http://expressionengine.com/user_guide/modules/wiki/getting_started.html" target="_blank">this</a> link to learn more about BBCode usage in the wiki.
+	</section>
+</section>
+</article>
+</body>
+</html>
