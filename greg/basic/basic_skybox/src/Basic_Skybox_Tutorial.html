@@ -1,0 +1,136 @@
+[[Category:Basic]]
+<article>
+<aside>
+<span class="requirement">User Level</span>
+Beginner
+
+<span class="requirement">Prerequisite knowledge:</span>
+Good ActionScript 3 programming experience with Flash Builder or similar integrated development environment (IDE) is recommended along with a basic understanding of Away3D.
+
+<span class="requirement">Required tools</span>
+Flash Builder or similar IDE.
+
+<span class="requirement">Sources</span>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/greg/basic/basic_skybox" target="_blank">Complete sources</a>
+
+<span class="requirement">Downloads</span>
+--- add downloadable zip ---
+</aside>
+A tutorial introducing how to implement the Skybox class and how it works in Away3D 4.x.
+
+<h4>Contents</h4>
+<nav><ul>
+ <li><a href="#intro">Introduction</a></li>
+ <li><a href="#settingup">Setting the scene</a></li>
+ <li><a href="#world">Creating the world around you</a></li>
+ <li><a href="#torus">Reflecting the world</a></li>
+ <li><a href="#conclusion">Conclusion</a></li>
+</ul></nav>
+<section id="intro"><h4>Introduction</h4>
+This tutorial introduces you to the <code>Skybox</code> class in Away3D 4.x and a brief introduction to mapping the environment on to the surface of an object to give a mirror reflection effect. The torus object continually rotates, showing the dynamic reflection from the view around it and you can pan the camera around the torus by moving the mouse to the left or right of the centre point, increasing the panning speed the further from the centre your mouse is.
+
+<figure>
+<a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/bin/Basic_SkyBox.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/Basic_Skybox.jpg"></a>  
+<figcaption>
+Listing 1. Basic Skybox example.
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_skybox/src/Basic_Skybox.as" target="_blank">Source code.</a>
+</figcaption>
+</figure>
+</section>
+<section id="settingup"><h4>Setting the scene</h4>
+As with the previous tutorials, you need to create your <code>View3D</code> and set the camera properies.
+
+<pre class="brush: as3;">
+stage.scaleMode = StageScaleMode.NO_SCALE;
+stage.align = StageAlign.TOP_LEFT;
+
+//setup the view
+_view = new View3D();
+addChild(_view);
+
+//setup the camera
+_view.camera.z = -600;
+_view.camera.y = 0;
+_view.camera.lookAt(new Vector3D());
+</pre>
+
+To improve the overall look when using a <code>Skybox</code> you can increase the camera's viewing angle to 90 degress, by adding the following line. By default, the camera is initialised with a viewing angle of 60 degrees. 
+
+<pre class="brush: as3;">
+_view.camera.lens = new PerspectiveLens(90);
+</pre>
+
+At the end of the class constructor, you need to include the <code>Event.ENTER_FRAME</code><code>Event.RESIZE</code> event listeners to render the 3D scene on each frame and respond when the window is re-sized.
+
+<pre class="brush: as3;">
+//setup the render loop
+addEventListener(Event.ENTER_FRAME, _onEnterFrame);
+stage.addEventListener(Event.RESIZE, onResize);
+onResize();
+</pre>
+</section>
+<section id="world"><h4>Creating the world around you</h4>
+A skybox is used to provide a 3D background image for distant objects such as landscapes, horizons, sky & clouds, star-fields or other unreachbale objects. These distant objects are represented as a cube and the images are mapped on to the inside surface of that cube with the camera viewpoint being in the centre of the skybox cube.
+
+The <code>Skybox</code> cube remains stationary even though the camera and viewpoint may change and so will always remain as a background in the distance.
+
+<figure>
+<img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/skybox_description.jpg" />
+<figcaption>Skybox layout principles</figcaption>
+</figure>
+
+To add the <code>Skybox</code>, six separate bitmap textures are required for the top, bottom, front, back, left and right sides of the cube. These bitmaps are built into a <code>BitmapCubeTexture</code>.
+
+<div class="thumbnails">
+<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_x.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_x_t.jpg"/></a><figcaption>Left image Texture</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_x.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_x_t.jpg"/></a><figcaption>Right image Texture</figcaption>
+</figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_y.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_y_t.jpg"/></a><figcaption>Bottom image Texture</figcaption>
+</figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_y.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_y_t.jpg"/></a><figcaption>Top image Texture</figcaption>
+</figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_z.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_z_t.jpg"/></a><figcaption>Far image Texture</figcaption>
+</figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_z.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_z_t.jpg"/></a><figcaption>Near image Texture</figcaption>
+</figure>
+</div>
+
+<pre class="brush: as3;">
+//setup the cube texture
+var cubeTexture:BitmapCubeTexture = new BitmapCubeTexture(Cast.bitmapData(EnvPosX), Cast.bitmapData(EnvNegX), Cast.bitmapData(EnvPosY), Cast.bitmapData(EnvNegY), Cast.bitmapData(EnvPosZ), Cast.bitmapData(EnvNegZ));
+</pre>
+
+Then it's simply a matter of passing the cube texture into the constructor of the <code>Skybox</code> and adding the object to the scene, as follow.
+
+<pre class="brush: as3;">
+_skyBox = new SkyBox(cubeTexture);
+_view.scene.addChild(_skyBox);
+</pre>
+</section>
+<section id="sphere"><h4>Reflecting the world</h4>
+You can now add the torus to your scene, so you can see how simple it can be to reflect the world around you, based on the texture mapping you have applied to your <code>Skybox</code>.
+
+The material used is a basic <code>ColorMaterial</code> that allows you to specify all the usual lighting properties, if necessary. To make the <code>ColorMaterial</code> take on environment mapping, it is necessary to add an additional texturing method, the <code>EnvMapMethod</code>. This takes the cube texture material you used in the <code>Skybox</code> and apply it to your material as an environment map. The second parameter in the <code>EnvMapMethod</code> is the alpha value to be applied to the mapping.
+
+<pre class="brush: as3;">
+//setup the environment map material
+var material:ColorMaterial = new ColorMaterial();
+material.addMethod(new EnvMapMethod(cubeTexture, 1));
+</pre>
+
+Finally the torus can be constructed and added to the scene.
+
+<pre class="brush: as3;">
+//setup the scene
+_torus = new Mesh(new TorusGeometry(150, 60, 40, 20), material);
+_view.scene.addChild(_torus);
+</pre>
+
+A limitation of environment mapping is that it does not take any other scene objects into consideration when creating the reflection as it relies solely on the cube texture provided. Calculating reflections of other objects in the scene dynamically is a significantly harder and more processor intensive task.
+</section>
+<section id="conclusion"><h4>Conclusion</h4>
+This tutorial has introduced you to using the <code>Skybox</code> capabilities of Away3D 4.x to add a level of depth/background, to your scenes. Rather than trying to construct vast amounts of geometry, sky boxes have the advantage of being extremely simple and performant whilst still giving the impression of realism. 
+
+Also, you had a very quick introduction to creating an object with an environment map, reflecting the view of the sky box across the object's surface.
+</section>
+</article>

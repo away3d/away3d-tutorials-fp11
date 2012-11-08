@@ -1,0 +1,121 @@
+[[Category:Basic]]
+<article>
+<aside>
+<span class="requirement">User Level</span>
+Beginner
+
+<span class="requirement">Prerequisite knowledge:</span>
+Good ActionScript 3 programming experience with Flash Builder or similar integrated development environment (IDE) is recommended.
+
+<span class="requirement">Required tools</span>
+Flash Builder or similar IDE.
+
+<span class="requirement">Sources</span>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/greg/basic/basic_view" target="_blank">Complete sources</a>
+
+<span class="requirement">Downloads</span>
+--- add downloadable zip ---
+</aside>
+This tutorial will give you an introduction to the view and scene setup in Away3D 4, the basic requirements for creating your 3D environment.
+
+<h4>Contents</h4>
+<nav><ul>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#settingup">Create and setup the 3D scene</a></li>
+<li><a href="#addobject">Add a textured object to the scene</a></li>
+<li><a href="#rotateobject">Rotate the object</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul></nav>
+<section id="intro"><h4>Introduction</h4>
+Working in Flash and Actionscript, you will be familiar with the concepts of using the standard display list for drawing and animating content. Away3D versions earlier than 4.0 all relied on this standard display list to render objects to your scene, however since Flash Player 11.0 and Away3D 4.x you can now take advantage of GPU hardware accelerated graphics for rendering performance as commonly seen in games, allowing you to create complex and immersive experiences for the web and using Adobe AIR, on mobile devices as well.
+
+The Flash Players GPU implementation is called Stage3D and works quite differently from conventional display list objects. There are numerous introductions and examples on the internet about Stage3D so this bit will be brief (Check out <a href="http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html">How Stage3D works.</a>). The main things to remember are that the Stage3D instances (as there can be up to 4) will always appear behind the standard stage objects. The Stage3D instances are layered on top of each other and are not transparent. This means that you cannot put a standard display object Bitmap in the background, for example. Away3D 4.0 uses Stage3D and automatically manages many other aspects of it's usage, leaving you to focus on the 3D content and interaction.
+
+<figure>
+<a href="http://away3d.com/wikicontent/tutorials/greg/basic/view_tutorial/bin/Basic_View.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/view_tutorial/images/Basic_View.jpg"></a>  
+<figcaption>
+Listing 1. Basic View example.
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_view/src/Basic_View.as" target="_blank">Source code.</a>
+</figcaption>
+</figure>     
+</section>
+<section id="settingup"><h4>Create and setup the 3D scene.</h4>
+To create your 3D experience, you need to have a 3D world to contain your objects and a mechanism to view those objects. Away3D has a <code>View3D</code> class which gives you the ability to do exactly this. Here is an example of how you use it. (Note: these code snippets are taken directly from the full source of the example).
+
+<pre class="brush: as3;">
+//setup the view
+_view = new View3D();
+addChild(_view);
+</pre>
+
+Once you have created a new instance of the View3D class you need to add it to the stage as you do with any other display object, however as described above, because this is Away3D 4.x and uses Stage3D, it will always appear behind any conventional display object. Technically, the View3D does not have any visible properties, but creates the Stage3D instance as required and being a displaylist object, allows events, such as <code>Event.ENTER_FRAME</code> to be used. 
+
+The <code>View3D</code> has a number of important properties that are needed for you to continue creating your world. Firstly, the <code>_view.scene</code> property is a container for your 3D objects, which will be discuss later when we add objects to the scene. Secondly, the way your 3D world is to be seen by the user is through the <code>_view.camera</code> property. Fortunately, both of these properties are created with default values when the View3D is constructed.
+
+The following lines alter some of the camera default values to reposition it in your 3D world and change the direction in which it points. The <code>camera.lookAt()</code> orients the camera to look directly at the specified 3D coordinates. In this case, <code>new Vector3D();</code> is the XYZ location (0, 0, 0).
+
+ <pre class="brush: as3;">
+//setup the camera
+_view.camera.z = -600;
+_view.camera.y = 500;
+_view.camera.lookAt(new Vector3D());
+ </pre>
+</section>
+<section id="addobject"><h4>Add a textured object to the scene</h4>
+At the moment, your 3D world isn't particularly exciting as there is nothing in it, so lets change that. To make the floor object in the example you need to add a Plane which, by default, made from two triangles arranged in a square.
+
+<pre class="brush: as3;">
+//setup the scene
+_plane = new Mesh(new PlaneGeometry(700, 700));
+_view.scene.addChild(_plane);
+</pre>
+ 
+One thing you may notice is that the mechanism to create a new plane is a little different to Away3D V3.6. In Away3D 4, the primitives are geometry creation tools rather than complete meshes as they were in V3.6. One of the main reasons for this is to take advantage being able to re-use the geometry data for multiple objects, avoiding the overhead of having to  re-upload the same data repeatedly.
+
+The <code>Mesh</code> constructor looks like this:
+
+<pre class="brush: as3;">
+var mesh:Mesh = new Mesh(geometry : Geometry, material : MaterialBase = null);
+</pre>
+
+As you can see, the <code>Mesh</code> takes a geometry parameter which in your case is a new <code>PlaneGeometry</code> with dimensions of 700 x 700. The second parameter is the texture to be used on the <code>Mesh</code>. The texture supplied needs to be of a type extended from <code>MaterialBase</code> which can be either a <code>ColorMaterial, TextureMaterial, SegmentMaterial</code> or <code>SkyboxMaterial</code>.
+
+The plane you have just created looks fine except that it doesn't look quite like the floor in the example above. The reason for this is that you haven't specified a texture material for the plane and a default, black & white checkerboard has been used instead. To add a texture, you need to modify the <code>Mesh</code> parameters to include a reference to your chosen texture, as follows. Using the <code>Cast.bitmapTexture()</code> you can easily create the required texture material from a <code>BitmapData</code>.
+
+<pre class="brush: as3;">
+_plane = new Mesh(new PlaneGeometry(700, 700), new TextureMaterial(Cast.bitmapTexture(FloorDiffuse)));
+</pre>
+
+There are a number of primitives available to you in the <code>away3d.primitives</code> package, including <code>SphereGeometry</code>, <code>CubeGeometry</code>, <code>ConeGeometry</code>, <code>CylinderGeometry</code>, etc.
+</section>
+<section id="rotateobject"><h4>Rotate the object</h4>
+
+Now you have your checkered floor in front of you, it's now time to give it something a little more interesting to rather than just sit there. How about a simple rotation? You can listen for the stage <code>ENTER_FRAME</code> event which fires before rendering every frame so can update the rotation of your floor plane and re-render the scene.
+
+To add the event listener, use the following.
+<pre class="brush: as3;">
+//setup the render loop
+addEventListener(Event.ENTER_FRAME, _onEnterFrame);
+</pre>
+
+The <code>_onEnterFrame</code> method will add 1 to the Y (verticle) rotation of the plane and the you call <code>_view.render()</code> which is required to draw your 3D world.
+
+<pre class="brush: as3;">
+/**
+* render loop
+*/
+private function _onEnterFrame(e:Event):void
+{
+_plane.rotationY += 1;
+_view.render();
+}
+</pre>
+
+The full example also has an event listener method that is executed when the stage is resized. This allows the dimensions of the View3D to be adjusted to fit the new size of the flash player window.
+</section>
+<section id="conclusion"><h4>Conclusion</h4>
+ 
+In this tutorial you have managed to construct a very basic scene to display a rotating texture floor using Away3D 4 and taking advantage of GPU hardware accelerated graphics.
+
+</section>
+</article>
