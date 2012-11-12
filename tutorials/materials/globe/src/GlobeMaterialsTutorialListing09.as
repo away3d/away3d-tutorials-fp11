@@ -27,11 +27,9 @@ package tutorials.materials.globe.src
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 
-	import tutorials.base.ListingBase;
-
 	use namespace arcane;
 
-	public class GlobeMaterialsTutorialListing09 extends ListingBase
+	public class GlobeMaterialsTutorialListing09 extends GlobeMaterialsTutorialListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]

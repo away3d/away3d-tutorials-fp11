@@ -15,9 +15,7 @@ package tutorials.materials.globe.src
 	import flash.display.BitmapDataChannel;
 	import flash.geom.Point;
 
-	import tutorials.base.ListingBase;
-
-	public class GlobeMaterialsTutorialListing02 extends ListingBase
+	public class GlobeMaterialsTutorialListing02 extends GlobeMaterialsTutorialListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]

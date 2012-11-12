@@ -9,12 +9,10 @@ package tutorials.materials.globe.src
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
 	import away3d.materials.methods.CompositeDiffuseMethod;
-	import away3d.materials.methods.CompositeSpecularMethod;
 	import away3d.materials.methods.FresnelSpecularMethod;
 	import away3d.materials.methods.MethodVO;
 	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.materials.utils.ShaderRegisterCache;
-	import away3d.materials.utils.ShaderRegisterElement;
 	import away3d.materials.utils.ShaderRegisterElement;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
@@ -27,11 +25,9 @@ package tutorials.materials.globe.src
 	import flash.display.BlendMode;
 	import flash.geom.Point;
 
-	import tutorials.base.ListingBase;
-
 	use namespace arcane;
 
-	public class GlobeMaterialsTutorialListing08 extends ListingBase
+	public class GlobeMaterialsTutorialListing08 extends GlobeMaterialsTutorialListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]

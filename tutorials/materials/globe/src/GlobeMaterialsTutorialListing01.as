@@ -8,9 +8,7 @@ package tutorials.materials.globe.src
 	import away3d.textures.BitmapTexture;
 	import away3d.utils.Cast;
 
-	import tutorials.base.ListingBase;
-
-	public class GlobeMaterialsTutorialListing01 extends ListingBase
+	public class GlobeMaterialsTutorialListing01 extends GlobeMaterialsTutorialListingBase
 	{
 		// Diffuse map for the Earth's surface.
 		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
