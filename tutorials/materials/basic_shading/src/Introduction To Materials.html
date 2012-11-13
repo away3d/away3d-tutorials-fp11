@@ -11,12 +11,12 @@ Good ActionScript 3 programming experience with Flash Builder or similar integra
 Flash Builder or similar IDE.
 
 <span class="requirement">Sources</span>
-<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/greg/basic/basic_shading" target="_blank">Complete sources</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/materials/basic_shading" target="_blank">Complete sources</a>
 
 <span class="requirement">Downloads</span>
 --- add downloadable zip ---
 </aside>
-The Away3D Basic Shading tutorial will introduce you to some of the basic principles of materials and shading in Away3D 4.x.
+The Away3D Introduction to Materials tutorial will bring to you some of the basic principles of materials and shading in Away3D 4.x.
 
 <h4>Contents:</h4>
 <nav><ul>
@@ -34,10 +34,10 @@ The Away3D Basic Shading tutorial will introduce you to some of the basic princi
 In this tutorial you will be introduced to the incredibly powerful texturing system within Away3D, which allows you to create stunningly realistic lighting and shading in you scene. The example has a number of primitive objects that are textured in different ways, demonstrating how you can achieve this realism. As a slight aside from the main example, there are three sub-examples which show each of the primitives along with how each aspect of the texturing affects the way it looks. The final scene sees all these objects together with multiple light sources.
  
 <figure>
-<a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/bin/Basic_Shading.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/Basic_Shading.jpg"></a>  
+<a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/bin/Basic_Shading.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/Basic_Shading.jpg"></a>  
 <figcaption>
 Listing 1. Basic Shading example.
-<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_shading/src/Basic_Shading.as" target="_blank">Source code.</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/materials/basic_shading/src/Basic_Shading.as" target="_blank">Source code.</a>
 </figcaption>
 </figure>
 </section>
@@ -125,8 +125,8 @@ This is a little departure from the main example and focusses on the sphere obje
 Here are the images used for the diffuse texture and the specular map. Click on each for a larger view. 
 
 <div class="thumbnails">
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/beachball_diffuse.jpg" rel="shadowbox; width=512;height=256;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/beachball_diffuse_t.jpg"/></a><figcaption>Diffuse Texture</figcaption></figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/beachball_specular.jpg" rel="shadowbox; width=512;height=256;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/beachball_specular_t.jpg"/></a><figcaption>Specular Map</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/beachball_diffuse.jpg" rel="shadowbox; width=512;height=256;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/beachball_diffuse_t.jpg"/></a><figcaption>Diffuse Texture</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/beachball_specular.jpg" rel="shadowbox; width=512;height=256;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/beachball_specular_t.jpg"/></a><figcaption>Specular Map</figcaption></figure>
 </div>
 
 Images are mapped onto the surface of the objects using the standard UV coordinate system. Triangles in the object, as well as having X,Y & Z coordinates for the 3 vertices also contain U & V coordinates for each vertex, in the range of 0-1 that define the location in the bitmap where the colour information is to be taken from. The top-left of the bitmap is the UV coordinate 0,0 whilst the bottom-right of the image is UV coordinate 1,1.
@@ -140,15 +140,15 @@ Applying the diffuse texture shows the colours in the above bitmap.
 When you apply the specular map, the impact is very subtle and may not be easily visible immediately. The image below show the differences, but the following examples demonstrate the effect more dramatically.
 
 <figure>
-<img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/speculardifference.jpg" />
+<img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/speculardifference.jpg" />
 <figcaption>Difference between diffuse and diffuse with specular</figcaption>
 </figure>
 
 <figure>
-<a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/bin/Basic_Shading_Ex1.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/Basic_Shading_Ex1.jpg"></a>  
+<a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/bin/Basic_Shading_Ex1.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/Basic_Shading_Ex1.jpg"></a>  
 <figcaption>
 Listing 2. Texturing the sphere.
-<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_shading/src/Basic_Shading_Ex1.as" target="_blank">Source code.</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/materials/basic_shading/src/Basic_Shading_Ex1.as" target="_blank">Source code.</a>
 </figcaption>
 </figure>
 </section>
@@ -158,9 +158,9 @@ Similarly, texturing the cube has a diffuse bitmap and a specular map but also h
 Here are the images for the cube texturing.
 
 <div class="thumbnails">
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/trinket_diffuse.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/trinket_diffuse_t.jpg"/></a><figcaption>Diffuse Texture</figcaption></figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/trinket_specular.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/trinket_specular_t.jpg"/></a><figcaption>Specular Map</figcaption></figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/trinket_normal.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/trinket_normal_t.jpg"/></a><figcaption>Normal Map</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/trinket_diffuse.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/trinket_diffuse_t.jpg"/></a><figcaption>Diffuse Texture</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/trinket_specular.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/trinket_specular_t.jpg"/></a><figcaption>Specular Map</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/trinket_normal.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/trinket_normal_t.jpg"/></a><figcaption>Normal Map</figcaption></figure>
 </div>
 
 Again, clicking the images reveals the addtional texture parts. Starting with no texture -> diffuse texture -> diffuse with specular map -> diffuse with specular and normal mapping.
@@ -168,23 +168,23 @@ Again, clicking the images reveals the addtional texture parts. Starting with no
 This example demonstrates the specular mapping a little better. If you look at the top side of the cube with the diffuse only and then diffuse with specular you can clearly see the specular highlights come through.
 
 <figure>
-<img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/speculardifference_1.jpg" />
+<img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/speculardifference_1.jpg" />
 <figcaption>Difference between diffuse and diffuse with specular</figcaption>
 </figure>
 
 <figure>
-<a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/bin/Basic_Shading_Ex2.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/Basic_Shading_Ex2.jpg"></a>  
+<a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/bin/Basic_Shading_Ex2.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/Basic_Shading_Ex2.jpg"></a>  
 <figcaption>
 Listing 3. Texturing the cube.
-<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_shading/src/Basic_Shading_Ex2.as" target="_blank">Source code.</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/materials/basic_shading/src/Basic_Shading_Ex2.as" target="_blank">Source code.</a>
 </figcaption>
 </figure></section>
 <section id="torus"><h4>Texturing the torus</h4>
 The final object, the torus, again makes use of a diffuse bitmap texture, a specular map and a normal map. The only real difference with this texturing is the use of the repeating pattern. The specular map in this case, is set to the same as diffuse map. 
 
 <div class="thumbnails">
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/weave_diffuse.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/weave_diffuse_t.jpg"/></a><figcaption>Diffuse Texture</figcaption></figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/weave_normal.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/weave_normal_t.jpg"/></a><figcaption>Normal Map</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/weave_diffuse.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/weave_diffuse_t.jpg"/></a><figcaption>Diffuse Texture</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/embeds/weave_normal.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/weave_normal_t.jpg"/></a><figcaption>Normal Map</figcaption></figure>
 </div>
 
 Clicking through the texture modes below show no texture -> diffuse only -> repeated diffuse (10 time horizontally and 5 times vertically) -> diffuse with specular map -> diffuse with specular and normal maps.
@@ -192,10 +192,10 @@ Clicking through the texture modes below show no texture -> diffuse only -> repe
 Whilst looking at the torus, in diffuse only mode, with the light source in front, it is visible over the white and black areas of the pattern. Quickly clicking the mouse, to add the specular map, you can see how the dark areas loose the light but the whiter areas maintain the specular reflection.
 
 <figure>
-<a href="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/bin/Basic_Shading_Ex3.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/shading_tutorial/images/Basic_Shading_Ex3.jpg"></a>  
+<a href="http://away3d.com/wikicontent/tutorials/materials/basic_shading/bin/Basic_Shading_Ex3.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/materials/basic_shading/images/Basic_Shading_Ex3.jpg"></a>  
 <figcaption>
 Listing 4. Texturing the torus.
-<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_shading/src/Basic_Shading_Ex3.as" target="_blank">Source code.</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/materials/basic_shading/src/Basic_Shading_Ex3.as" target="_blank">Source code.</a>
 </figcaption>
 </figure></section>
 <section id="final"><h4>Putting it all together</h4>

@@ -11,7 +11,7 @@ Good ActionScript 3 programming experience with Flash Builder or similar integra
 Flash Builder or similar IDE.
 
 <span class="requirement">Sources</span>
-<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/greg/basic/basic_tweening" target="_blank">Complete sources</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/animation/basic_tweening" target="_blank">Complete sources</a>
 
 <span class="requirement">Downloads</span>
 --- add downloadable zip ---
@@ -29,15 +29,15 @@ A tutorial demonstrating mouse click interaction and object tweening in Away 3D 
 In this tutorial you will learn how to create a floor plane, similar to that in the Basic View tutorial, that has a cube placed on it's surface. The floor in this tutorial is interactive and reacts to mouse clicks by tweening (moving smoothly) the position of the cube to the location on the floor, you clicked.
 
 <figure>
-<a href="http://away3d.com/wikicontent/tutorials/greg/basic/tweening_tutorial/bin/Basic_Tweening3D.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/tweening_tutorial/images/Basic_Tweening3D.jpg"></a>  
+<a href="http://away3d.com/wikicontent/tutorials/animation/basic_tweening/bin/Basic_Tweening3D.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/animation/basic_tweening/images/Basic_Tweening3D.jpg"></a>  
 <figcaption>
 Listing 1. Basic Tweening3D example.
-<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_tweening/src/Basic_Tweening3D.as" target="_blank">Source code.</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/animation/basic_tweening/src/Basic_Tweening3D.as" target="_blank">Source code.</a>
 </figcaption>
 </figure>
 </section>
 <section id="settingup"><h4>Setting the scene</h4>
-The scene you are creating contains a plane, the floor and a cube that looks a bit like a trinket box, with the camera looking slightly downwards on the whole scene. To begin with you create the <code>View3D</code> and set up the camera properties as follows, very much the same way as you did in the <a href="http://away3d.com/wiki/Basic_View_Tutorial" target="_blank">Basic View Tutorial</a>.
+The scene you are creating contains a plane, the floor and a cube that looks a bit like a trinket box, with the camera looking slightly downwards on the whole scene. To begin with you create the <code>View3D</code> and set up the camera properties as follows, very much the same way as you did in the <a href="http://away3d.com/wiki/Setting_Up_Your_Scene" target="_blank">Setting Up Your Scene</a> tutorial.
  
 <pre class="brush: as3;">
 stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -84,7 +84,7 @@ _view.scene.addChild(_plane);
 _plane.addEventListener(MouseEvent3D.MOUSE_UP, _onMouseUp);
 </pre>
 
-For full information on the mouse picking system, please check the tutorial on <a href="http://away3d.com/wiki/Away3D_Picking_Overview_Tutorial" target="_blank">Away3D Picking Overview</a>.    
+For full information on the mouse picking system, please check the tutorial on <a href="http://away3d.com/wiki/Picking_Tutorial" target="_blank">Picking Tutorial</a>.    
 </section>
 <section id="tweener"><h4>Animate the cube - The tweener</h4>
 Your objects are placed and the floor now reacts to mouse clicks but currently does very little else. Now you can add the remaining functionality to move the cube around based on those mouse clicks. When you receive the <code>MouseEvent3D.MOUSE_UP</code> event in your handler method, information about the 3d mouse interaction is stored in the event parameter, passed in.

@@ -11,7 +11,7 @@ Good ActionScript 3 programming experience with Flash Builder or similar integra
 Flash Builder or similar IDE.
 
 <span class="requirement">Sources</span>
-<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/greg/basic/basic_skybox" target="_blank">Complete sources</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/materials/basic_skybox" target="_blank">Complete sources</a>
 
 <span class="requirement">Downloads</span>
 --- add downloadable zip ---
@@ -30,10 +30,10 @@ A tutorial introducing how to implement the Skybox class and how it works in Awa
 This tutorial introduces you to the <code>Skybox</code> class in Away3D 4.x and a brief introduction to mapping the environment on to the surface of an object to give a mirror reflection effect. The torus object continually rotates, showing the dynamic reflection from the view around it and you can pan the camera around the torus by moving the mouse to the left or right of the centre point, increasing the panning speed the further from the centre your mouse is.
 
 <figure>
-<a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/bin/Basic_SkyBox.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/Basic_Skybox.jpg"></a>  
+<a href="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/bin/Basic_SkyBox.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/Basic_Skybox.jpg"></a>  
 <figcaption>
 Listing 1. Basic Skybox example.
-<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_skybox/src/Basic_Skybox.as" target="_blank">Source code.</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/materials/basic_skybox/src/Basic_SkyBox.as" target="_blank">Source code.</a>
 </figcaption>
 </figure>
 </section>
@@ -75,23 +75,23 @@ A skybox is used to provide a 3D background image for distant objects such as la
 The <code>Skybox</code> cube remains stationary even though the camera and viewpoint may change and so will always remain as a background in the distance.
 
 <figure>
-<img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/skybox_description.jpg" />
+<img src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/skybox_description.jpg" />
 <figcaption>Skybox layout principles</figcaption>
 </figure>
 
 To add the <code>Skybox</code>, six separate bitmap textures are required for the top, bottom, front, back, left and right sides of the cube. These bitmaps are built into a <code>BitmapCubeTexture</code>.
 
 <div class="thumbnails">
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_x.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_x_t.jpg"/></a><figcaption>Left image Texture</figcaption></figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_x.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_x_t.jpg"/></a><figcaption>Right image Texture</figcaption>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/embeds/skybox/snow_negative_x.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/snow_negative_x_t.jpg"/></a><figcaption>Left image Texture</figcaption></figure>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/embeds/skybox/snow_positive_x.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/snow_positive_x_t.jpg"/></a><figcaption>Right image Texture</figcaption>
 </figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_y.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_y_t.jpg"/></a><figcaption>Bottom image Texture</figcaption>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/embeds/skybox/snow_negative_y.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/snow_negative_y_t.jpg"/></a><figcaption>Bottom image Texture</figcaption>
 </figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_y.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_y_t.jpg"/></a><figcaption>Top image Texture</figcaption>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/embeds/skybox/snow_positive_y.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/snow_positive_y_t.jpg"/></a><figcaption>Top image Texture</figcaption>
 </figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_z.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_negative_z_t.jpg"/></a><figcaption>Far image Texture</figcaption>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/embeds/skybox/snow_negative_z.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/snow_negative_z_t.jpg"/></a><figcaption>Far image Texture</figcaption>
 </figure>
-<figure><a href="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_z.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/greg/basic/skybox_tutorial/images/snow_positive_z_t.jpg"/></a><figcaption>Near image Texture</figcaption>
+<figure><a href="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/embeds/skybox/snow_positive_z.jpg" rel="shadowbox; width=512;height=512;"><img src="http://away3d.com/wikicontent/tutorials/materials/basic_skybox/images/snow_positive_z_t.jpg"/></a><figcaption>Near image Texture</figcaption>
 </figure>
 </div>
 
