@@ -11,7 +11,7 @@ Good ActionScript 3 programming experience with Flash Builder or similar integra
 Flash Builder or similar IDE.
 
 <span class="requirement">Sources</span>
-<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/greg/basic/basic_view" target="_blank">Complete sources</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/scenegraph/basic_view" target="_blank">Complete sources</a>
 
 <span class="requirement">Downloads</span>
 --- add downloadable zip ---
@@ -32,10 +32,10 @@ Working in Flash and Actionscript, you will be familiar with the concepts of usi
 The Flash Players GPU implementation is called Stage3D and works quite differently from conventional display list objects. There are numerous introductions and examples on the internet about Stage3D so this bit will be brief (Check out <a href="http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html">How Stage3D works.</a>). The main things to remember are that the Stage3D instances (as there can be up to 4) will always appear behind the standard stage objects. The Stage3D instances are layered on top of each other and are not transparent. This means that you cannot put a standard display object Bitmap in the background, for example. Away3D 4.0 uses Stage3D and automatically manages many other aspects of it's usage, leaving you to focus on the 3D content and interaction.
 
 <figure>
-<a href="http://away3d.com/wikicontent/tutorials/greg/basic/view_tutorial/bin/Basic_View.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/greg/basic/view_tutorial/images/Basic_View.jpg"></a>  
+<a href="http://away3d.com/wikicontent/tutorials/scenegraph/basic_view/bin/Basic_View.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/scenegraph/basic_view/images/Basic_View.jpg"></a>  
 <figcaption>
 Listing 1. Basic View example.
-<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/greg/basic/basic_view/src/Basic_View.as" target="_blank">Source code.</a>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/scenegraph/basic_view/src/Basic_View.as" target="_blank">Source code.</a>
 </figcaption>
 </figure>     
 </section>
@@ -80,6 +80,11 @@ var mesh:Mesh = new Mesh(geometry : Geometry, material : MaterialBase = null);
 
 As you can see, the <code>Mesh</code> takes a geometry parameter which in your case is a new <code>PlaneGeometry</code> with dimensions of 700 x 700. The second parameter is the texture to be used on the <code>Mesh</code>. The texture supplied needs to be of a type extended from <code>MaterialBase</code> which can be either a <code>ColorMaterial, TextureMaterial, SegmentMaterial</code> or <code>SkyboxMaterial</code>.
 
+<figure>
+<img src="http://away3d.com/wikicontent/tutorials/scenegraph/basic_view/images/floor_no_texture.png" />
+<figcaption>Figure 1. The floor plane with no texture.</figcaption>
+</figure>
+
 The plane you have just created looks fine except that it doesn't look quite like the floor in the example above. The reason for this is that you haven't specified a texture material for the plane and a default, black & white checkerboard has been used instead. To add a texture, you need to modify the <code>Mesh</code> parameters to include a reference to your chosen texture, as follows. Using the <code>Cast.bitmapTexture()</code> you can easily create the required texture material from a <code>BitmapData</code>.
 
 <pre class="brush: as3;">
@@ -98,7 +103,7 @@ To add the event listener, use the following.
 addEventListener(Event.ENTER_FRAME, _onEnterFrame);
 </pre>
 
-The <code>_onEnterFrame</code> method will add 1 to the Y (verticle) rotation of the plane and the you call <code>_view.render()</code> which is required to draw your 3D world.
+The <code>_onEnterFrame</code> method will add 1 to the Y (vertical) rotation of the plane and the you call <code>_view.render()</code> which is required to draw your 3D world.
 
 <pre class="brush: as3;">
 /**
