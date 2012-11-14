@@ -59,8 +59,9 @@ package
 		
 
 		private var _view:View3D;
-		private var _cameraController:HoverController;
 		
+		//navigation variables
+		private var _cameraController:HoverController;
 		private var _move:Boolean = false;
 		private var _lastPanAngle:Number;
 		private var _lastTiltAngle:Number;
@@ -112,13 +113,10 @@ package
 			
 			
 			//create the particle animation set
-			var animationSet:ParticleAnimationSet = new ParticleAnimationSet();
-			animationSet.loop = true;
-			animationSet.hasDuration = true;
-			animationSet.hasDelay = true;
+			var animationSet:ParticleAnimationSet = new ParticleAnimationSet(true, true, true);
 			
 			//add behaviors to the animationSet
-			animationSet.addAnimation(new ParticlePositionNode(ParticlePropertiesMode.LOCAL));
+			animationSet.addAnimation(new ParticlePositionNode(ParticlePropertiesMode.LOCAL_STATIC));
 			animationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.GLOBAL, new Vector3D(0, 50, 0)));
 			
 			//set the initialiser function

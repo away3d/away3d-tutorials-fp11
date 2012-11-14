@@ -69,22 +69,26 @@ package
 		
 		private var _view:View3D;
 		
+		//navigation variables
 		private var _cameraController:HoverController;
 		private var _move:Boolean = false;
 		private var _lastPanAngle:Number;
 		private var _lastTiltAngle:Number;
 		private var _lastMouseX:Number;
 		private var _lastMouseY:Number;
+		private var angle:Number = 0;
+		private var state:int;
 		
+		//data variables
 		private var data:Vector.<Vector3D>;
 		
-		private var angle:Number = 0;
-		
-		private var animator:ParticleAnimator;
-		
+		//light variables
 		private var greenlight:PointLight;
 		private var redlight:PointLight;
 		private var lightpicker:StaticLightPicker;
+		
+		//particle animator
+		private var animator:ParticleAnimator;
 		
 		public function TheAdvancedDemo()
 		{
@@ -95,7 +99,7 @@ package
 			_view.antiAlias = 2;
 			addChild(_view);
 			
-			_cameraController = new HoverController(_view.camera, null, 0, 0, 1000, -90);
+			_cameraController = new HoverController(_view.camera, null, 180, 0, 1000, -90);
 			
 			addChild(new AwayStats(_view));
 			initTextData();
@@ -115,8 +119,7 @@ package
 			onTimer(null);
 		}
 		
-		private var state:int;
-		
+		// change the state by time
 		private function onTimer(e:Event):void
 		{
 			switch (state)
@@ -149,7 +152,7 @@ package
 					{
 						for (var k:int = 0; k < depth; k++)
 						{
-							var point:Vector3D = new Vector3D(256 - i, 128 - j, k);
+							var point:Vector3D = new Vector3D(i - bitmapData.width / 2, bitmapData.height / 2 - j, k);
 							point.scaleBy(SIZE);
 							data.push(point);
 						}
@@ -178,27 +181,26 @@ package
 		
 		private function initParticle():void
 		{
-			//create the original particle geometry
+			//generate the particle geometry
 			var cube:Geometry = new CubeGeometry(SIZE, SIZE, SIZE);
-			
-			//combine them into a list
 			var geometrySet:Vector.<Geometry> = new Vector.<Geometry>;
 			for (var i:int = 0; i < data.length; i++)
 			{
 				geometrySet.push(cube);
 			}
 			
-			//generate the particle geometry
 			var particleGeometry:Geometry = ParticleGeometryHelper.generateGeometry(geometrySet);
 			
 			//create the particle animation set
 			var animationSet:ParticleAnimationSet = new ParticleAnimationSet();
-			animationSet.hasDuration = false;
-			animationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.LOCAL));
-			animationSet.addAnimation(new ParticlePositionNode(ParticlePropertiesMode.LOCAL));
+			//add behaviors to the animationSet
+			animationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.LOCAL_STATIC));
+			animationSet.addAnimation(new ParticlePositionNode(ParticlePropertiesMode.LOCAL_STATIC));
 			
+			//set the initialiser function
 			animationSet.initParticleFunc = initParticleParam;
 			
+			//create material, mesh and animator
 			var material:ColorMaterial = new ColorMaterial(0xffffff);
 			material.alphaPremultiplied = true;
 			material.lightPicker = lightpicker;
@@ -215,7 +217,9 @@ package
 			var degree1:Number = Math.random() * Math.PI * 2;
 			var degree2:Number = Math.random() * Math.PI * 2;
 			var r:Number = 30;
+			//set the velocity
 			param[ParticleVelocityNode.VELOCITY_VECTOR3D] = new Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
+			//set the position according to bitmap data
 			param[ParticlePositionNode.POSITION_VECTOR3D] = data[param.index];
 		}
 		
