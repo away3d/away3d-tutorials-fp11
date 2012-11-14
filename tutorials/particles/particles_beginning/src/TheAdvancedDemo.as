@@ -211,16 +211,16 @@ package
 			_view.scene.addChild(particleMesh);
 		}
 		
-		private function initParticleParam(param:ParticleProperties):void
+		private function initParticleParam(prop:ParticleProperties):void
 		{
-			param.startTime = 0;
+			prop.startTime = 0;
 			var degree1:Number = Math.random() * Math.PI * 2;
 			var degree2:Number = Math.random() * Math.PI * 2;
 			var r:Number = 30;
 			//set the velocity
-			param[ParticleVelocityNode.VELOCITY_VECTOR3D] = new Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
+			prop[ParticleVelocityNode.VELOCITY_VECTOR3D] = new Vector3D(r * Math.sin(degree1) * Math.cos(degree2), r * Math.cos(degree1) * Math.cos(degree2), r * Math.sin(degree2));
 			//set the position according to bitmap data
-			param[ParticlePositionNode.POSITION_VECTOR3D] = data[param.index];
+			prop[ParticlePositionNode.POSITION_VECTOR3D] = data[prop.index];
 		}
 		
 		private function onEnterFrame(event:Event):void
