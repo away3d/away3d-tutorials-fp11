@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Away3D 4 Picking Tutorial</title>
+	<!-- AS3 Syntax Highlighter -->
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shCore.js"></script>
+	<script type="text/javascript" src="http://away3d.com/static/syntaxHighlighter/scripts/shBrushAS3.js"></script>
+	<link type="text/css" rel="stylesheet" href="http://away3d.com/static/syntaxHighlighter/styles/shCoreEclipse.css"/>
+	<script type="text/javascript">SyntaxHighlighter.all();</script>
+	<!-- shadow box -->
+	<link rel="stylesheet" type="text/css" href="http://away3d.com/static/shadowBox/shadowbox.css"/>
+	<script type="text/javascript" src="http://away3d.com/static/shadowBox/shadowbox.js"></script>
+	<script type="text/javascript">Shadowbox.init();</script>
+	<!-- Wiki base styles -->
+	<link rel="stylesheet" href="http://away3d.com/themes/wiki_themes/away3d/wiki_styles.css" type="text/css" media="screen" title="Global Styles" charset="utf-8"/>
+	<!-- Styles for tutorials -->
+	<link type="text/css" rel="stylesheet" href="http://away3d.com/wikicontent/styles/tutorial.css"/>
+</head>
+
+<body>
+
+<div class="tutorialMetadata">[[Category:Particles]]</div>
+<article>
+<aside>
+<span class="requirement">User Level</span>
+Beginner
+
+<span class="requirement">Prerequisite knowledge:</span>
+Good ActionScript 3 programming experience with Flash Builder or similar integrated development environment (IDE) is recommended along with a basic understanding of Away3D 4.
+
+<span class="requirement">Required tools</span>
+ Flash Builder or similar IDE.
+
+<span class="requirement">Sources</span>
+ <a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/particles/particles_beginning/src/" target="_blank">Complete sources.</a>
+
+<span class="requirement">Downloads</span>
+... a link to the project zip or other media for download ...
+</aside>
+This tutorial will give you an introductory overview of the Away3D particle system
+<h4>Contents</h4>
+<nav><ul>
+<li><a href="#sect1">Introduction</a></li>
+<li><a href="#sect2">Particle Geometry</a></li>
+<li><a href="#sect3">Particle Life</a></li>
+<li><a href="#sect4">Particle Position</a></li>
+<li><a href="#sect5">Particle Velocity</a></li>
+<li><a href="#conclusion">Summary And Advanced Demo</a></li>
+</ul></nav>
+<section id="sect1"><h4>Introduction</h4>
+The Away3D 4.1 Alpha release includes the ability to create high performance, GPU-based particle systems with a powerful and configurable API.  With its help, incredible effects can be easily implemented in your 3D projects. The following tutorial introduces you to the basic concepts of the API, including the particle geometry class, and animation set init function controlling a particle's life and behavior.
+
+</section>
+<section id="sect2"><h4>Particle Geometry</h4>
+The first thing we need for particles is a set of geometries. Each element of this set will represent a particle. You can use any geometry in the set; a built-in geometry primitive provided by Away3D or an external geometry loaded from a file. However, we suggest you do not use a geometry with a high number of vertices, as it will cause a heavy load on performance.
+
+You may ask why the geometry set is predefined rather than created on the fly like some other particle systems. This is down to the limitations placed on vertex buffer uploading, which if you add dynamically needs to occur much more frequently. Uploading a vertex buffer carries a performance cost and so is an event that is best minimised, and besides which a dynamic particle geometry has restrictions on the possibility of sharing the vertex buffer across different animation instances. In our example, we will use the CubeGeometry as our geometry set element. See this code snippet:
+<pre class="brush: as3;">
+var cube:Geometry = new CubeGeometry(10, 10, 10);
+var geometrySet:Vector.&lt;Geometry&gt; = new Vector.&lt;Geometry&gt;;
+for (var i:int = 0; i < 1000; i++)
+{
+    geometrySet.push(cube);
+}
+</pre>
+
+Here we have added 1000 cube geometries to our geometry set. If required, you can mix together different kinds of geometry in the same geometry set. Once we are done, we use the particle helper API to convert our set to the final particle geometry:
+ <pre class="brush: as3">
+var particleGeometry:ParticleGeometry = ParticleGeometryHelper.generateGeometry(geometrySet);
+</pre>
+We have our final particle geometry instance, ready for animation.
+</section>
+<section id="sect3"><h4>Particle Lifetime</h4>
+Next, we need to create a particle animation set.
+
+You may already be familiar with the concept of particle lifetime cycles. In a traditional particle system, a particle has its lifetime value, through which other properties (color, position etc.) are controlled. In Away3D, a particle has a startTime property related to the system time, and an optional duration time (If no duration is encountered, the particle will have infinite duration). There is also a delay property (also optional), which represents the delay time between the end of a particles duration and the start of another duration. When these properties are put into use, a particle will appear at its start time and will be alive for a duration time, then disappear for its delay time.
+
+As these properties are fundamental to  the time calculations inside the GPU code, we have to pre-define which will be used. See the constructor of <code>ParticleAnimationSet</code>, the first parameter indicates whether we will be using the particle's duration property, the second indicates whether we will use a looping particle timeline (so that once the particle has completed its cycle, it automatically starts a new one, and the third indicates whether the particles will disappear for the delay time before restarting their cycles. In this example, we set all three properties to true. See the code below:
+<pre class="brush: as3">
+var animationSet:ParticleAnimationSet = new ParticleAnimationSet(true, true, true);
+</pre>
+Next, you may ask how we set these time-related properties? If we were to set them as a property on the animation set, all particles would have the same properties and appear and disappear at the same time. Instead we use a function thats allow us to set each particle's properties separately. These are known a local static properties due to the fact that they are local to each particle, but set only once.
+
+The function will be invoked for every particle. You can identify the index of the particle using the <code>ParticleProperties::index</code> value, then set the <code>ParticleProperties::startTime</code>,<code>ParticleProperties::duration</code> and <code>ParticleProperties::delay</code> values for the particle. We write the code like this:
+<pre class="brush: as3">
+animationSet.initParticleFunc = initParticleParam;
+</pre>
+<pre class="brush: as3">
+private function initParticleParam(prop:ParticleProperties):void
+{
+    prop.startTime = prop.index * 0.005;
+    prop.duration = 10;
+    prop.delay = 5;
+}
+</pre>
+
+You may have guessed that by doing this, we have created a set of local static properties that will cause the particles to start their cycles 5 milliseconds apart, be alive for 10s, then be asleep for 5s. OK!
+
+</section>
+<section id="sect4"><h4>Particle Position</h4>
+At this point, you may be asking if there is an emitter which can control the originating position of each particle, similar to some other particle systems? No, there is no emmiter. Let us forget about the emmiter, we can implement the same functionality far more effectively through behaviors (one of the most important concepts in the particle API). Let us begin by looking at the <code>ParticlePositionNode</code>. It can control the position for every particle in the <code>ParticleGeometry</code>. The nature of its control is determined via a mode property in the class constructor. This can take three different values: <code>ParticlePropertiesMode.LOCAL_STATIC</code>(particles can have different starting properties for the behaviour),<code>ParticlePropertiesMode.GLOBAL</code>(all particles have the same starting properties) or <code>ParticlePropertiesMode.LOCAL_DYNAMIC</code>(particles can have different properties that are controlled on the fly). The <code>LOCAL_STATIC</code> mode and <code>GLOBAL</code> mode are extremely high performance, and can share GPU resources across animation instances. As a result, it is recommended we use these two modes as much as possible. In this case, we will select <code>ParticlePropertiesMode.LOCAL_STATIC</code> mode:
+<pre class="brush: as3">
+animationSet.addAnimation(new ParticlePositionNode(ParticlePropertiesMode.LOCAL_STATIC));
+</pre>
+Now we can control the position value through the init function:
+<pre class="brush: as3">
+private function initParticleFunc(prop:ParticleProperties):void
+{
+    prop.startTime = prop.index * 0.005;
+    prop.duration = 10;
+    prop.delay = 5;
+    //calculate the original position of every particle.
+    var percent:Number = prop.index / prop.total;
+    var r:Number = percent * 1000;
+    var x:Number = r*Math.cos(percent * Math.PI * 2 * 20);
+    var z:Number = r*Math.sin(percent * Math.PI * 2 * 20);
+    param[ParticlePositionNode.POSITION_VECTOR3D] = new Vector3D(x, 0, z);
+}
+</pre>
+Before we can preview the effect, we have to create the material, mesh and animator object for the particles. This takes the same approach as other forms of animation in Away3D.
+
+<figure>
+
+<a href="http://away3d.com/wikicontent/tutorials/particles/particles_beginning/bin/preview.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/particles/particles_beginning/bin/preview.jpg"></a>
+<figcaption>
+( click image to launch ). <a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/particles/particles_beginning/src/TheBasicTutorial.as" target="_blank">Source code.</a>
+</figcaption>
+</figure>
+
+</section>
+<section id="sect5"><h4>Particle Velocity</h4>
+Next, lets make our particles move. For this, we will use another behaviour, the <code>ParticleVelocityNode</code>. We know we should be using either <code>LOCAL_STATIC</code> or <code>GLOBAL</code> for our mode as much as possible. But what is the difference between them?
+
+Internally, the <code>LOCAL_STATIC</code> mode uses a stream of registers to pass the data to the GPU, so that the data can be represented per-particle. However, <code>GLOBAL</code> mode uses constant registers to pass the data per-behaviour. The number of available stream registers is fewer than the number of constant registers, and stream registers require more data and more initialisation time. So as a rule, we should try and use <code>GLOBAL</code> mode when possible.
+
+In our case, we want all particles move with the same velocity. This means <code>ParticlePropertiesMode.GLOBAL</code> mode can be used. The code looks like this:
+<pre class="brush: as3">
+animationSet.addAnimation(new ParticleVelocityNode(ParticlePropertiesMode.GLOBAL, new Vector3D(0, 50, 0)));
+</pre>
+OK, lets preview again!
+
+<figure>
+
+<a href="http://away3d.com/wikicontent/tutorials/particles/particles_beginning/bin/TheBasicTutorial.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/particles/particles_beginning/bin/TheBasicTutorial.jpg"></a>
+<figcaption>
+( click image to launch ). <a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/particles/particles_beginning/src/TheBasicTutorial.as" target="_blank">Source code.</a>
+</figcaption>
+</figure>
+
+</section>
+<section id="conclusion"><h4>Summary And Advanced Demo</h4>
+Our first example is finished. we have seen how to create a particle geometry, how to set start time and position properties on individual particles, and how to make them move. Of course, the system has many such features that haven't been covered here, but we all have to start somewhere. Now you can use these features to build extremely awesome effects! Don't believe us? Take a look at this advanced demo which is implemented only by using the features mentioned in this tutorial:
+
+<figure>
+
+<a href="http://away3d.com/wikicontent/tutorials/particles/particles_beginning/bin/TheAdvancedDemo.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/particles/particles_beginning/bin/TheAdvancedDemo.jpg"></a>
+  <figcaption>
+   ( click image to launch ). <a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/particles/particles_beginning/src/TheAdvancedDemo.as" target="_blank">Full source code.</a>
+  </figcaption></figure>
+</section>
+</article>
+
+</body>
+</html>
