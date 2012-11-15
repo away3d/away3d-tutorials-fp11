@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ZipBuilder" basedir=".">
+    
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="ant/ant-contrib.jar" />
+    
+	<description>
+        Tasks to construct the downloadable ZIP files for the tutorial projects.
+        
+        Requires an manifest.xml file located in the tutorial folder to be included in the 
+        zip. The manifest.xml file contains the filenames of the classes to be used to create 
+        launch scripts.
+    </description>
+
+	<property name="temp.folder" value="temp-zip-folder" />
+	<property name="manifest.location" value="./tutorials/animation/basic_tweening/manifest.txt" />
+	
+	<target name="Util:Remove-temp-folder" if="tempFolderExists" depends="Util:CheckTempFolder">
+	    <echo> - Util:Removing temporary folder.</echo>
+
+		<delete includeEmptyDirs="true">
+			<fileset dir="${temp.folder}"/>
+		</delete>
+  	</target>
+
+	<target name="Util:CheckTempFolder">
+		<condition property="tempFolderExists">
+			<available file="${temp.folder}" type="dir"/>
+		</condition>
+	</target>
+	
+	<target name="Util:Create-temp-folder" depends="Util:Remove-temp-folder">
+	    <echo> - Util:Creating temporary folder.</echo>
+	    <mkdir dir="${temp.folder}"/>
+	</target>
+	
+	<target name="Util:Find-manifest-files">
+        <fileset id="filesContainingSearchString" dir=".">
+            <include name="**/manifest.txt"/>
+        </fileset>
+	</target>
+	
+	<target name="Generate Specified Tutorial ZIP" depends="Util:Create-temp-folder">
+	    <echo>Generate Specified Tutorial ZIP"</echo>
+	    
+		<Generate-Zip-bundle manifest-file="${manifest.location}" />
+	</target>
+
+	<target name="Generate ALL Tutorial ZIP Bundles" depends="Util:Find-manifest-files">
+	    <echo>Generate ALL Tutorial ZIP Bundles</echo>
+	    
+		<Generate-Zip-bundle manifest-file="${manifest.location}" />
+	</target>
+
+	<macrodef name="Generate-Zip-bundle"> 
+		<attribute name="manifest-file"/> 
+		
+		<sequential> 
+			<echo>Generating tutorial ZIP bundle @{manifest-file}</echo>
+			
+			<!-- Read the contents of the manifest file to get the project name and source files -->
+			<loadfile srcfile="@{manifest-file}" property="file-content" />
+			
+			<!-- Make the launch directory -->
+			<mkdir dir="${temp.folder}/launch" />
+			
+			<!-- Loop through each element in the file (Project:<project name>,src-file1,src-file2) -->
+			<for list="${file-content}" delimiter="," param="manifest-item">
+			    <sequential>
+			        <if>
+			  			<matches string="@{manifest-item}" pattern="^Project:"/>
+						<then>
+							<!-- Set the project name -->
+							<propertyregex property="project-name"
+								input="@{manifest-item}"
+								regexp="^(Project:)(.*)"
+								select="\2"
+								casesensitive="false" />
+			
+							<echo message="Project reference found:${project-name}" />
+						</then>
+						<else>
+							<!-- Process the source file -->
+							<echo message="Source file found:@{manifest-item}" />
+			
+							<!-- Get the sources name -->
+							<var name="source-name" unset="true"/>
+							
+							<basename property="source-name" file="@{manifest-item}" suffix=".as"/>
+							
+							<echo message="Trimmed source file found:${source-name}" />
+							
+							<!-- Copy and rename the launch file to the project name -->
+							<copy file="bundle/launch/project.launch" tofile="${temp.folder}/launch/${source-name}.launch"/>
+			
+							<!-- Change the launch source reference in the launch template -->
+							<replace file="${temp.folder}/launch/${source-name}.launch" token="---SOURCE---" value="${source-name}"/>
+				
+							<!-- Change the launch source reference in the launch template -->
+							<replace file="${temp.folder}/launch/${source-name}.launch" token="---PROJECT---" value="${project-name}"/>
+										
+						</else>
+			  		</if>
+			  	</sequential>		    			    
+			</for>
+			
+			<!-- Get the project path  -->
+			<dirname property="project-path" file="@{manifest-file}" />
+			
+			<!-- Copy the template files -->
+			<copy todir="${temp.folder}">
+				<fileset dir="./bundle">
+				    <exclude name="**/launch/**"/>
+				</fileset>
+			</copy>    
+			
+			<!-- Copy the project files -->
+			<copy todir="${temp.folder}">
+				<fileset dir="${project-path}">
+				    <exclude name="**/images/**"/>
+				    <exclude name="manifest.txt"/>
+				</fileset>
+			</copy>
+			
+			<!-- Create the archive -->
+			<zip destfile="${project-path}/${project-name}.zip"
+       			basedir="${temp.folder}"
+       			excludes="**/${project-name}.zip"
+       			update="no"
+			/>
+			
+			<!-- Remove the temporary folder -->
+			<antcall target="Util:Remove-temp-folder" />
+		</sequential> 
+	</macrodef>	
+	
+</project>
