@@ -1,4 +1,4 @@
-package tutorials.picking.overview.src
+package
 {
 
 	import away3d.core.pick.PickingColliderType;

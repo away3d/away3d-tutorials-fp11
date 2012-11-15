@@ -1,4 +1,4 @@
-package tutorials.materials.globe.src
+package
 {
 
 	import away3d.containers.View3D;

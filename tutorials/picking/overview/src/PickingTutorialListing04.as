@@ -1,4 +1,4 @@
-package tutorials.picking.overview.src
+package
 {
 
 	import away3d.animators.SkeletonAnimationSet;
@@ -33,21 +33,21 @@ package tutorials.picking.overview.src
 
 		// Textures.
 		// body diffuse map
-		[Embed(source="../../../../embeds/hellknight/hellknight_diffuse.jpg")]
+		[Embed(source="../embeds/hellknight_diffuse.jpg")]
 		private var BodyDiffuse:Class;
 		// body normal map
-		[Embed(source="../../../../embeds/hellknight/hellknight_normals.png")]
+		[Embed(source="../embeds/hellknight_normals.png")]
 		private var BodyNormals:Class;
 		// body specular map
-		[Embed(source="../../../../embeds/hellknight/hellknight_specular.png")]
+		[Embed(source="../embeds/hellknight_specular.png")]
 		private var BodySpecular:Class;
 
 		// Mesh.
-		[Embed(source="../../../../embeds/hellknight/hellknight.md5mesh", mimeType="application/octet-stream")]
+		[Embed(source="../embeds/hellknight.md5mesh", mimeType="application/octet-stream")]
 		private var HellKnight_Mesh:Class;
 
 		// Animations.
-		[Embed(source="../../../../embeds/hellknight/walk7.md5anim", mimeType="application/octet-stream")]
+		[Embed(source="../embeds/walk7.md5anim", mimeType="application/octet-stream")]
 		private var HellKnight_Walk7:Class;
 
 		private var _bodyMaterial:TextureMaterial;

@@ -1,4 +1,4 @@
-package tutorials.materials.globe.src
+package
 {
 
 	import away3d.arcane;
@@ -32,77 +32,77 @@ package tutorials.materials.globe.src
 	public class GlobeMaterialsTutorialListing09 extends GlobeMaterialsTutorialListingBase
 	{
 		// Diffuse map for the Earth's surface.
-		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
+		[Embed(source="../embeds/earth_diffuse.jpg")]
 		public static var EarthSurfaceDiffuse:Class;
 
 		// Diffuse map for the Moon's surface.
-		[Embed(source="../../../../embeds/solar/moon.jpg")]
+		[Embed(source="../embeds/moon.jpg")]
 		public static var MoonSurfaceDiffuse:Class;
 
 		// Normal map for globe.
-		[Embed(source="../../../../embeds/solar/earth_normals.png")]
+		[Embed(source="../embeds/earth_normals.png")]
 		public static var EarthSurfaceNormals:Class;
 
 		// Specular map for globe.
-		[Embed(source="../../../../embeds/solar/earth_specular.jpg")]
+		[Embed(source="../embeds/earth_specular.jpg")]
 		public static var EarthSurfaceSpecular:Class;
 
 		// Night diffuse map for globe.
-		[Embed(source="../../../../embeds/solar/earth_ambient.jpg")]
+		[Embed(source="../embeds/earth_ambient.jpg")]
 		public static var EarthSurfaceNight:Class;
 
 		// Diffuse map for clouds.
-		[Embed(source="../../../../embeds/solar/earth_clouds.jpg")]
+		[Embed(source="../embeds/earth_clouds.jpg")]
 		public static var EarthSkyDiffuse:Class;
 
 		// Skybox textures.
-		[Embed(source="../../../../embeds/skybox/space_posX.jpg")]
+		[Embed(source="../embeds/space_posX.jpg")]
 		private var PosX:Class;
-		[Embed(source="../../../../embeds/skybox/space_negX.jpg")]
+		[Embed(source="../embeds/space_negX.jpg")]
 		private var NegX:Class;
-		[Embed(source="../../../../embeds/skybox/space_posY.jpg")]
+		[Embed(source="../embeds/space_posY.jpg")]
 		private var PosY:Class;
-		[Embed(source="../../../../embeds/skybox/space_negY.jpg")]
+		[Embed(source="../embeds/space_negY.jpg")]
 		private var NegY:Class;
-		[Embed(source="../../../../embeds/skybox/space_posZ.jpg")]
+		[Embed(source="../embeds/space_posZ.jpg")]
 		private var PosZ:Class;
-		[Embed(source="../../../../embeds/skybox/space_negZ.jpg")]
+		[Embed(source="../embeds/space_negZ.jpg")]
 		private var NegZ:Class;
 
 		// Star texture.
-		[Embed(source="../../../../embeds/solar/star.jpg")]
+		[Embed(source="../embeds/star.jpg")]
 		private var StarTexture:Class;
 
 		// Sun texture.
-		[Embed(source="../../../../embeds/solar/sun.jpg")]
+		[Embed(source="../embeds/sun.jpg")]
 		private var SunTexture:Class;
 
 		// Lens flare.
-		[Embed(source="../../../../embeds/lensflare/flare0.jpg")]
+		[Embed(source="../embeds/flare0.jpg")]
 		private var Flare0:Class;
-		[Embed(source="../../../../embeds/lensflare/flare1.jpg")]
+		[Embed(source="../embeds/flare1.jpg")]
 		private var Flare1:Class;
-		[Embed(source="../../../../embeds/lensflare/flare2.jpg")]
+		[Embed(source="../embeds/flare2.jpg")]
 		private var Flare2:Class;
-		[Embed(source="../../../../embeds/lensflare/flare3.jpg")]
+		[Embed(source="../embeds/flare3.jpg")]
 		private var Flare3:Class;
-		[Embed(source="../../../../embeds/lensflare/flare4.jpg")]
+		[Embed(source="../embeds/flare4.jpg")]
 		private var Flare4:Class;
-		[Embed(source="../../../../embeds/lensflare/flare5.jpg")]
+		[Embed(source="../embeds/flare5.jpg")]
 		private var Flare5:Class;
-		[Embed(source="../../../../embeds/lensflare/flare6.jpg")]
+		[Embed(source="../embeds/flare6.jpg")]
 		private var Flare6:Class;
-		[Embed(source="../../../../embeds/lensflare/flare7.jpg")]
+		[Embed(source="../embeds/flare7.jpg")]
 		private var Flare7:Class;
-		[Embed(source="../../../../embeds/lensflare/flare8.jpg")]
+		[Embed(source="../embeds/flare8.jpg")]
 		private var Flare8:Class;
-		[Embed(source="../../../../embeds/lensflare/flare9.jpg")]
+		[Embed(source="../embeds/flare9.jpg")]
 		private var Flare9:Class;
-		[Embed(source="../../../../embeds/lensflare/flare10.jpg")]
+		[Embed(source="../embeds/flare10.jpg")]
 		private var Flare10:Class;
-		[Embed(source="../../../../embeds/lensflare/flare11.jpg")]
+		[Embed(source="../embeds/flare11.jpg")]
 		private var Flare11:Class;
-		[Embed(source="../../../../embeds/lensflare/flare12.jpg")]
+		[Embed(source="../embeds/flare12.jpg")]
 		private var Flare12:Class;
 
 		private var _earth:ObjectContainer3D;

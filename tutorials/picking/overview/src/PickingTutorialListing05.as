@@ -1,4 +1,4 @@
-package tutorials.picking.overview.src
+package
 {
 
 	import away3d.containers.ObjectContainer3D;
@@ -26,7 +26,6 @@ package tutorials.picking.overview.src
 		 	super();
 		}
 
-		private var _tracer:Mesh;
 		private var _msg:TextField;
 		private var _usingBestHit:Boolean = true;
 		private var _locationTracer:Mesh;

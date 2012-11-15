@@ -1,4 +1,4 @@
-package tutorials.materials.globe.src
+package
 {
 
 	import away3d.containers.ObjectContainer3D;
@@ -11,11 +11,11 @@ package tutorials.materials.globe.src
 	public class GlobeMaterialsTutorialListing01 extends GlobeMaterialsTutorialListingBase
 	{
 		// Diffuse map for the Earth's surface.
-		[Embed(source="../../../../embeds/solar/earth_diffuse.jpg")]
+		[Embed(source="../embeds/earth_diffuse.jpg")]
 		public static var EarthSurfaceDiffuse:Class;
 
 		// Diffuse map for the Moon's surface.
-		[Embed(source="../../../../embeds/solar/moon.jpg")]
+		[Embed(source="../embeds/moon.jpg")]
 		public static var MoonSurfaceDiffuse:Class;
 
 		private var _earth:ObjectContainer3D;

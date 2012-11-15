@@ -1,4 +1,4 @@
-package tutorials.picking.overview.src
+package
 {
 
 	import away3d.core.pick.PickingColliderType;
@@ -25,7 +25,7 @@ package tutorials.picking.overview.src
 	public class PickingTutorialListing06 extends PickingTutorialListingBase
 	{
 		// Assets.
-		[Embed(source="../../../../embeds/head/head.obj", mimeType="application/octet-stream")]
+		[Embed(source="../embeds/head.obj", mimeType="application/octet-stream")]
 		private var HeadAsset:Class;
 
 		private const TEXTURE_SIZE:uint = 2048;
