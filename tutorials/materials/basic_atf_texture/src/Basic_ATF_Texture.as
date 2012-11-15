@@ -102,7 +102,7 @@ package {
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 
-			var url:String = "floor/floor_diffuse.atf";
+			var url:String = "../asset/floor/floor_diffuse.atf";
 			loader = new URLLoader();
 			loader.dataFormat = URLLoaderDataFormat.BINARY;
 			loader.addEventListener(Event.COMPLETE, setupFromLoader);
