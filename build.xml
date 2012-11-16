@@ -70,6 +70,9 @@
 			<!-- Make the launch directory -->
 			<mkdir dir="${temp.folder}/launch" />
 			
+			<!-- Make the empty bin directory -->
+			<mkdir dir="${temp.folder}/bin" />
+						
 			<!-- Loop through each element in the file (Project:<project name>,src-file1,src-file2) -->
 			<for list="${file-content}" delimiter="," param="manifest-item">
 			    <sequential>
@@ -123,6 +126,7 @@
 			<!-- Copy the project files -->
 			<copy todir="${temp.folder}">
 				<fileset dir="${project-path}">
+				    <exclude name="**/bin/**"/>
 				    <exclude name="**/images/**"/>
 				    <exclude name="manifest.txt"/>
 				</fileset>
