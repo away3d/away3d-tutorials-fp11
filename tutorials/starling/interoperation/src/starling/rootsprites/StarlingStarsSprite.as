@@ -40,10 +40,10 @@ package starling.rootsprites{
 	public class StarlingStarsSprite extends Sprite
 	{
 		// Starling Particle assets
-		[Embed(source="../embeds/stars.pex", mimeType="application/octet-stream")]
+		[Embed(source="../../../embeds/stars.pex", mimeType="application/octet-stream")]
 		private static const StarsConfig:Class;
 		
-		[Embed(source = "../embeds/stars.png")]
+		[Embed(source = "../../../embeds/stars.png")]
 		private static const StarsParticle:Class;
 		
 		private static var _instance:StarlingStarsSprite;

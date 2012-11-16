@@ -12,7 +12,7 @@
     </description>
 
 	<property name="temp.folder" value="temp-zip-folder" />
-	<property name="manifest.location" value="./tutorials/animation/basic_tweening/manifest.txt" />
+	<property name="manifest.location" value="/Users/Greg/Trunks/away3d-tutorials-fp11/tutorials/animation/basic_tweening/manifest.txt" />
 	
 	<target name="Util:Remove-temp-folder" if="tempFolderExists" depends="Util:CheckTempFolder">
 	    <echo> - Util:Removing temporary folder.</echo>
@@ -33,22 +33,23 @@
 	    <mkdir dir="${temp.folder}"/>
 	</target>
 	
-	<target name="Util:Find-manifest-files">
-        <fileset id="filesContainingSearchString" dir=".">
-            <include name="**/manifest.txt"/>
-        </fileset>
-	</target>
-	
 	<target name="Generate Specified Tutorial ZIP" depends="Util:Create-temp-folder">
 	    <echo>Generate Specified Tutorial ZIP"</echo>
 	    
 		<Generate-Zip-bundle manifest-file="${manifest.location}" />
 	</target>
 
-	<target name="Generate ALL Tutorial ZIP Bundles" depends="Util:Find-manifest-files">
+	<target name="Generate ALL Tutorial ZIP Bundles" depends="Util:Create-temp-folder">
 	    <echo>Generate ALL Tutorial ZIP Bundles</echo>
-	    
-		<Generate-Zip-bundle manifest-file="${manifest.location}" />
+
+		<for param="manifest.file">
+			<path>
+				<fileset dir="." includes="**/manifest.txt"/>
+			</path>
+  			<sequential>
+  			    <Generate-Zip-bundle manifest-file="@{manifest.file}" />
+      		</sequential>
+      	</for>
 	</target>
 
 	<macrodef name="Generate-Zip-bundle"> 
@@ -57,6 +58,12 @@
 		<sequential> 
 			<echo>Generating tutorial ZIP bundle @{manifest-file}</echo>
 			
+			<!-- Reset vars -->
+			<var name="file-content" unset="true"/>
+			<var name="project-name" unset="true"/>
+			<var name="project-path" unset="true"/>
+			<var name="project-name" unset="true"/>
+						
 			<!-- Read the contents of the manifest file to get the project name and source files -->
 			<loadfile srcfile="@{manifest-file}" property="file-content" />
 			
