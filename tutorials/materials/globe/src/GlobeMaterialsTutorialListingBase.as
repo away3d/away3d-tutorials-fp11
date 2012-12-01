@@ -27,9 +27,6 @@ package
 		private var _tiltIncrement:Number = 0;
 		private var _panIncrement:Number = 0;
 
-		private const WIDTH:Number = 800;
-		private const HEIGHT:Number = 600;
-
 		public function GlobeMaterialsTutorialListingBase() {
 			super();
 			addEventListener( Event.ADDED_TO_STAGE, addedToStageHandler );
@@ -59,8 +56,6 @@ package
 			// View.
 			_view = new View3D();
 			_view.backgroundColor = 0x000000;
-			_view.width = WIDTH;
-			_view.height = HEIGHT;
 			_view.antiAlias = 4;
 			_view.camera.lens.far = 15000;
 			_view.addSourceURL( "srcview/index.html" );
