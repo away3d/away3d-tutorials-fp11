@@ -1,0 +1,246 @@
+<div class="tutorialMetadata">[[Category:Advanced]]</div>
+<article>
+<aside>
+<span class="requirement">User Level</span>
+Advanced
+
+<span class="requirement">Prerequisite knowledge:</span>
+Good ActionScript 3 programming experience with Flash Builder or similar integrated development environment (IDE) is recommended along with a basic understanding of Away3D, Stage3D and AGAL.
+
+<span class="requirement">Required tools</span>
+Flash Builder or similar IDE.
+
+<span class="requirement">Sources</span>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/materials/advanced_custom" target="_blank">Complete sources</a>
+
+<span class="requirement">Downloads</span>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/materials/advanced_custom/CustomMaterials.zip" target="_blank">ZIP-file</a>
+</aside>
+A tutorial introducing how to implement custom materials from scratch.
+
+<h4>Contents</h4>
+<nav><ul>
+ <li><a href="#intro">Introduction</a></li>
+ <li><a href="#basics">Material basics</a></li>
+ <li><a href="#beginnings">Small beginnings</a></li>
+ <li><a href="#pass">Implementing the pass</a></li>
+ <li><a href="#agal">Providing the AGAL code</a></li>
+ <li><a href="#colour">Setting the colour</a></li>
+ <li><a href="#activating">Activating the pass</a></li>
+ <li><a href="#rendering">Rendering</a></li>
+ <li><a href="#deactivating">Deactivating the pass</a></li>
+ <li><a href="#renderstate">A word on setting render state</a></li>
+ <li><a href="#using">Using the material</a></li>
+ <li><a href="#debugging">Debugging shaders</a></li>
+ <li><a href="#conclusion">Conclusion</a></li>
+</ul></nav>
+<section id="intro"><h4>Introduction</h4>
+If you've used Away3D in any way before, you've come into contact with the material framework. Materials are what give meshes their appearance and allow them to reflect the light. Without them, nothing could be rendered to the screen. The default materials the engine provides, such as <code>ColorMaterial</code>, <code>TextureMaterial</code>, <code>TextureMultipassMaterial</code>, etc., provide you with an easy solution to quickly use different light reflection models and add material effects such as fog, outlines or environment mapping (see <a href="http://away3d.com/tutorials/Introduction_to_Materials" target="_blank">Introduction to Materials</a> and <a href="http://away3d.com/tutorials/Globe_Materials_Tutorial" target="_blank">Globe Materials Tutorial</a>).
+
+You may be wondering why you'd want to build custom materials rather than creating new methods for the existing ones? For one, the method-based materials are specialized in providing per-pixel lighting common in high-end 3D content. For that reason it may be too demanding for very old hardware. Especially when using the constrained mode, you may want to do per-vertex shading instead of per-pixel shading and perform some specialized trickery and optimizations the default framework simply cannot anticipate. Other uses can be to perform some outlandish non-standard effects, to be able to compile GLSL code to AGAL and use the resulting code, you name it.
+
+Luckily, the Away3D material framework entails more than just the default materials. The highest abstraction <code>MaterialBase</code> assumes very little and allows for extension to implement your own entirely custom shaders. <code>SkyBoxMaterial</code> is a perfect and simple example of that.
+
+A word of warning: this is not an AGAL tutorial. There's already a <a href="http://blog.norbz.net/tag/agal/" target="_blank">load of great tutorials</a> on that out there which you may want to skim through.
+
+</section>
+<section id="basics"><h4>Material basics</h4>
+A material in Away3D is basically a collection of passes. Simply put, a pass represents a render to the screen (or a render target texture in more advanced cases) with a single shader program. Many materials will just use a single pass, others will use more. In that case, the same geometry will be drawn several times with different programs, which allows you to achieve various effects. When we say “writing custom materials”, we really mean “writing custom passes”. Usually, the material just acts as the glue that holds them together.
+
+So let's see how we can implement a custom material and pass!
+</section>
+
+<section id="beginnings"><h4>Small beginnings</h4>
+For this first tutorial, we're going to build the most simple material imaginable. No textures, no lights, just flat colours. Riveting, I know! As dull as it may sound, it's the best way to explain the very basics.
+
+So, we need to create a pass and a material using it. To create a custom pass, simply extend <code>MaterialPassBase</code>, which is the abstract class that takes care of the basic functionality, mostly things you don't really need to worry about right now. We'll get to implementing the actual pass in a minute.
+
+<pre class="brush: as3;">
+public class TrivialColorPass extends MaterialPassBase
+</pre>
+
+Creating the material that will use the pass is very easy. Simply create a class extending <code>MaterialBase</code> and tell it to add the pass in its constructor!
+
+<pre class="brush: as3;">
+public class TrivialColorMaterial extends MaterialBase
+{
+    public function TrivialColorMaterial()
+    {
+        addPass(new TrivialColorPass());
+    }
+}
+</pre>
+
+That's really all we need to do for the material. As mentioned before, the actual work happens in the pass. Let's get it on!
+
+</section>
+
+<section id="pass"><h4>Implementing the pass</h4>
+During rendering, the renderer will tell the pass to do all sorts of things in order to actually get things to the screen. This includes creating the shaders, setting up values for them to use, activating and deactivating render state and drawing triangles. Some of these things are handled automatically, but since the <code>MaterialPassBase</code> is abstract there will be things that only the concrete subclasses can provide. Implementing a custom pass is all about filling in the gaps. The gaps we currently need to fill in are the following methods (in order as called):
+
+<ul>
+<li><code>getVertexCode</code>: provide the AGAL code for the vertex shader</li>
+<li><code>getFragmentCode</code>: provide the AGAL code for the fragment shader</li>
+<li><code>activate</code>: set the render state for the entire pass</li>
+<li><code>render</code>: set the render state for the current renderable and draw the current renderable's triangles</li>
+<li><code>deactivate</code>: clear any render state that needs to be cleared</li>
+</ul>
+
+We'll explain each in turn.
+</section>
+
+<section id="agal"><h4>Providing the AGAL code</h4>
+Evidently, a pass needs a shader program to be able to calculate the screen colour pixels. Since I'm sure you've read some AGAL/Stage3D tutorials, you know that the vertex shader runs for every vertex and outputs values per vertex, while the fragment shader interpolates these based on the position in the triangle the current fragment is and provides them as input through the varying registers. In our awesome trivial colour shader, we simply need to calculate the projected vertex coordinates in the vertex shader and output a constant colour value in the fragment shader. We'll provide the vertex model coordinates in attribute stream 0 (register va0), and the world-view-projection matrix is at vertex constant 0 (vc0). The actual streams will be set in the render command.
+
+<pre class="brush: as3;">
+/**
+* Get the vertex shader code for this shader
+*/
+override arcane function getVertexCode() : String
+{
+    // simply transform to view space, vertex coordinates are placed in attribute stream0, the matrix being at vertex constant index 0
+    return "m44 op, va0, vc0";
+}
+
+/**
+* Get the fragment shader code for this shader
+* @param fragmentAnimatorCode Any additional fragment animation code imposed by the framework, used by some animators. Ignore this for now, since we're not using them.
+*/
+override arcane function getFragmentCode(fragmentAnimatorCode : String) : String
+{
+    // simply set colour as output value, the colour assigned to fragment constant index 0
+    return "mov oc, fc0";
+}
+</pre>
+</section>
+
+<section id="colour"><h4>Setting the colour</h4>
+We'll need to pass on the colour value to the shader at some point, but before we can do that, we'll first need a way to define the colour. We store the RGBA values for the shader constant in a Vector.&lt;Number&gt; and just use some good old getter/setter action:
+
+<pre class="brush: as3;">
+private var _fragmentData : Vector.&lt;Number&gt;
+</pre>
+
+<pre class="brush: as3;">
+public function get color() : uint
+{
+    return _color;
+}
+
+public function set color(value : uint) : void
+{
+    _color = value;
+    // extract individual channels and transform range to [0..1]
+    _fragmentData[0] = ((value &gt;&gt; 16) & 0xff) / 0xff;	// red
+    _fragmentData[1] = ((value &gt;&gt; 8) & 0xff) / 0xff;	// green
+    _fragmentData[2] = (value & 0xff) / 0xff;		// blue
+    _fragmentData[3] = ((value &gt;&gt; 24) & 0xff) / 0xff;	// alpha
+}
+</pre>
+
+</section>
+
+<section id="activating"><h4>Activating the pass</h4>
+<pre class="brush: as3;">
+In the <code>activate</code> method, we set up render state that is constant for a whole pass (ie. it doesn't change depending on the object we're rendering). In our case, that would of course be the colour stored in the <code>_fragmentData Vector</code>. We also call the super method to make sure the default actions happen (this includes setting the <code>Program3D</code> instance to the context).
+
+/**
+* Sets the render state which is constant for this pass
+* @param stage3DProxy The stage3DProxy used for the current render pass
+* @param camera The camera currently used for rendering
+*/
+override arcane function activate(stage3DProxy : Stage3DProxy, camera : Camera3D) : void
+{
+    super.activate(stage3DProxy, camera);
+    stage3DProxy._context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, _fragmentData, 1);
+}
+</pre>
+</section>
+
+<section id="rendering"><h4>Rendering</h4>
+Alright! The good stuff! The <code>render</code> function sets the render state per renderable object, such as transformation matrices and draws the triangles.
+
+<pre class="brush: as3;">
+/**
+* Set render state for the current renderable and draw the triangles.
+* @param renderable The renderable that needs to be drawn.
+* @param stage3DProxy The stage3DProxy used for the current render pass.
+* @param camera The camera currently used for rendering.
+* @param viewProjection The matrix that transforms world space to screen space.
+*/
+override arcane function render(renderable : IRenderable, stage3DProxy : Stage3DProxy, camera : Camera3D, viewProjection : Matrix3D) : void
+{
+    var context : Context3D = stage3DProxy._context3D;
+
+    // calculate model-view-projection matrix for the current renderable
+    _matrix.copyFrom(renderable.sceneTransform);
+    _matrix.append(viewProjection);
+
+    renderable.activateVertexBuffer(0, stage3DProxy);
+    context.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, _matrix, true);
+    context.drawTriangles(renderable.getIndexBuffer(stage3DProxy), 0, renderable.numTriangles);
+}
+</pre>
+
+As you can see, this is basic Stage3D API usage. Noteworthy is the <code>viewProjection</code> parameter being passed in. You should always use this when rendering to the screen rather than <code>camera.viewProjection</code>. The reason is that it contains viewport scaling necessary for render-to-texture renders (which occurs when using filters on the view).
+
+</section>
+
+<section id="deactivating"><h4>Deactivating the pass</h4>
+When all objects for the current pass are rendered, you need to deactivate the render state. For now, there's no state that needs to be cleared, so we simply call the <code>super</code> method. Of course, you don't need to override the method in this particular case, but we do it here for completion.
+
+<pre class="brush: as3;">
+/**
+* Clear render state for the next pass.
+* @param stage3DProxy The stage3DProxy used for the current render pass.
+*/
+override arcane function deactivate(stage3DProxy : Stage3DProxy) : void
+{
+    // just go for default behaviour
+    super.deactivate(stage3DProxy);
+}
+</pre>
+
+</section>
+
+<section id="renderstate"><h4>A word on setting render state</h4>
+You'll have noticed render state is set both in the activate and render methods. Why not just set everything in the render state and do away with overriding activate? Simpy because it's more efficient. You wouldn't want to upload the colour values for every renderable. If you're drawing a lot, it'll shave off quite a few upload calls.
+
+It also allows you to group constant data by update frequency. It's usually a good idea to group all constants that are constant per pass in a single <code>Vector.&lt;Number&gt;</code>, and those that change per renderable (transformation matrices, etc) in another. This reduces upload call overhead to a minimum.
+</section>
+
+<section id="using"><h4>Using the material</h4>
+Finally, using the actual material is simple; it's no different from using any other material:
+
+<pre class="brush: as3;">
+var sphereGeom : SphereGeometry = new SphereGeometry();
+var material : MaterialBase = new TrivialColorMaterial();
+view.scene.addChild(new Mesh(sphereGeom, material));
+</pre>
+
+<figure>
+    <a href="http://away3d.com/wikicontent/tutorials/materials/advanced_custom/bin/Advanced_CustomMaterials01.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/materials/advanced_custom/images/CustomMaterials01.jpg"></a>
+    <figcaption>
+        Listing 1. TrivialColorMaterial in use.
+        <a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/materials/advanced_custom/src/CustomMaterials01.as" target="_blank">Source code.</a>
+    </figcaption>
+</figure>
+
+</section>
+
+<section id="debugging"><h4>Debugging shaders</h4>
+Render state and code errors often get silently swallowed while rendering unless Stage3D is explicitly told to check for errors. Away3D takes care of this, by setting:
+
+<pre class="brush: as3;">
+Debug.active = true;
+</pre>
+
+This does result in a performance penalty so be sure to set it to <code>false</code> in release code!
+
+</section>
+
+<section id="conclusion"><h4>Conclusion</h4>
+In this tutorial, we've shown a minimal example of implementing entirely custom materials using AGAL code. In future tutorials, we'll dig into more interesting usages such as texturing, single-pass lighting and multi-pass lighting. Next up: texturing!
+</section>
+
+</article>

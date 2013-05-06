@@ -1,0 +1,162 @@
+<div class="tutorialMetadata">[[Category:Advanced]]</div>
+<article>
+<aside>
+<span class="requirement">User Level</span>
+Advanced
+
+<span class="requirement">Prerequisite knowledge:</span>
+Good ActionScript 3 programming experience with Flash Builder or similar integrated development environment (IDE) is recommended along with a basic understanding of Away3D, Stage3D and AGAL.
+
+<span class="requirement">Required tools</span>
+Flash Builder or similar IDE.
+
+<span class="requirement">Sources</span>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/materials/advanced_custom" target="_blank">Complete sources</a>
+
+<span class="requirement">Downloads</span>
+<a href="https://github.com/away3d/away3d-tutorials-fp11/tree/master/tutorials/materials/advanced_custom/CustomMaterials.zip" target="_blank">ZIP-file</a>
+</aside>
+A tutorial introducing how to implement custom materials from scratch using textures.
+
+<h4>Contents</h4>
+<nav><ul>
+ <li><a href="#intro">Introduction</a></li>
+ <li><a href="#texture">Setting the texture</a></li>
+ <li><a href="#agal">Providing the AGAL code</a></li>
+ <li><a href="#activating">Activating the pass</a></li>
+ <li><a href="#rendering">Rendering</a></li>
+ <li><a href="#deactivating">Deactivating the pass</a></li>
+ <li><a href="#notdeactivating">NOT Deactivating the pass</a></li>
+ <li><a href="#conclusion">Conclusion</a></li>
+</ul></nav>
+<section id="intro"><h4>Introduction</h4>
+In the <a href="http://away3d.com/tutorials/Writing_Custom_Materials_1%3A_Getting_Started" target="_blank">previous tutorial</a>, we saw some of the important basics on building materials from scratch by building a flat coloured material. Basic indeed, and not very interesting. To improve on that, we'll make a small step in the right direction by introducing textures, which in turn exposes a bit more of the material framework's requirements.
+</section>
+
+<section id="texture"><h4>Setting the texture</h4>
+We can start out exactly the same as last time's <code>TrivialColorMaterial</code> and <code>TrivialColorPass</code>, naming them <code>TrivialTextureMaterial</code> and <code>TrivialTexturePass</code>, respectively. We'll highlight the differences necessary to use textures.
+
+Instead of a colour value, we'll be using a texture as the source for the surface colour. Away3D's 2D textures are represented by <code>Texture2DBase</code> (and more concretely, its subclasses, which can be <code>BitmapData</code> based, ATF-file based or completely custom), so we need a way to assign the texture to the pass. Simply provide a getter and setter:
+
+<pre class="brush: as3;">
+public function get texture() : Texture2DBase
+{
+    return _texture;
+}
+
+public function set texture(value : Texture2DBase) : void
+{
+    _texture = value;
+}
+</pre>
+
+No color getter/setter is needed this time, and since we don't have any more constant data to send to the fragment shader, there's no need to create a Vector.&lt;Number&gt; for that either.
+
+</section>
+
+<section id="agal"><h4>Providing the AGAL code</h4>
+As far as the vertex shader is concerned, only one thing changes. Since we'll need to map a texture on our objects, we need to provide some UV coordinates per vertex and pass them on to the fragment shader where the texture will be sampled.
+
+We're still using vertex attribute stream 0 for the position, so we'll use stream 1 for the UV coordinates. We simply pass them on to varying register v0, so the fragment shader can access it, which simply needs to sample the texture we set at texture stream 0.
+
+<pre class="brush: as3;">
+/**
+ * Get the vertex shader code for this shader
+ */
+override arcane function getVertexCode() : String
+{
+    // transform to view space and pass on uv coords to the fragment shader
+    return  "m44 op, va0, vc0\n" +
+        "mov v0, va1";
+}
+
+/**
+ * Get the fragment shader code for this shader
+ * @param fragmentAnimatorCode Any additional fragment animation code imposed by the framework, used by some animators. Ignore this for now, since we're not using them.
+ */
+override arcane function getFragmentCode(fragmentAnimatorCode : String) : String
+{
+    // simply set sampled colour from interpolated uv value as output value
+    return "tex oc, v0, fs0 <2d, clamp, linear, miplinear>";
+}
+
+</pre>
+</section>
+
+<section id="activating"><h4>Activating the pass</h4>
+The only render state constant for the entire pass is the texture, which we already decided to place in stream 0. We'll need to get the actual Stage3D <code>Texture</code> object from the <code>Texture2DBase</code>, which is done as follows:
+<pre class="brush: as3;">
+
+/**
+* Sets the render state which is constant for this pass
+* @param stage3DProxy The stage3DProxy used for the current render pass
+* @param camera The camera currently used for rendering
+*/
+override arcane function activate(stage3DProxy : Stage3DProxy, camera : Camera3D) : void
+{
+    super.activate(stage3DProxy, camera);
+    stage3DProxy._context3D.setProgramConstantsFromVector(Context3DProgramType.FRAGMENT, 0, _fragmentData, 1);
+}
+</pre>
+</section>
+
+<section id="rendering"><h4>Rendering</h4>
+The <code>render</code> method is practically the same as the <code>TrivialColorPass.render</code> method, with one obvious addition: assigning the UV coordinate stream to attribute stream 1 along with the position we already set at stream 0:
+
+<pre class="brush: as3;">
+renderable.activateUVBuffer(1, stage3DProxy);
+</pre>
+
+</section>
+
+<section id="deactivating"><h4>Deactivating the pass</h4>
+While last time we could just skip implementing this step, when using textures this is necessary. Stage3D won't let us keep textures bound to texture stream slots if they're not used by the fragment shader. This means that if we'd render an object with our current TrivialTextureMethod followed by a render of an object with TrivialColorMethod, the texture would still be bound in slot 0 resulting in an error. The same is the case for vertex attributes streams, so the UV coordinates assigned to stream 1 need to be unassigned.
+
+<pre class="brush: as3;">
+/**
+ * Clear render state for the next pass.
+ * @param stage3DProxy The stage3DProxy used for the current render pass.
+ */
+override arcane function deactivate(stage3DProxy : Stage3DProxy) : void
+{
+    super.deactivate(stage3DProxy);
+
+    var context : Context3D = stage3DProxy._context3D;
+
+    // clear the texture and stream we set before
+    context.setTextureAt(0, null);
+    context.setVertexBufferAt(1, null);
+}
+</pre>
+
+"Hold on!", I hear you say, "We've been using vertex stream 0 last time and didn't need to disable that!" True enough, but since we're always using the vertex position, we'll always have something assigned to stream 0 anyway, so disabling it is unnecessary (and it made the previous example a bit simpler).
+
+</section>
+
+<section id="notdeactivating"><h4>NOT deactivating the pass</h4>
+An alternative approach to clear the unused texture and vertex streams is to tell the material framework how many of them are used. In this case, we can simply set the correct values in the constructor:
+
+<pre class="brush: as3;">
+_numUsedStreams = 2;	// vertex position and uv coords
+_numUsedTextures = 1;	// a single texture
+</pre>
+
+This will allow the material framework to disable streams automatically as needed, and you won't have to overrride the <code>deactivate</code> method.
+
+</section>
+
+<section id="conclusion"><h4>Conclusion</h4>
+The accompanying example code shows how the material can be used, in conjunction with the old <code>TrivialColorMaterial</code> in order to make sure the render state is cleared correctly.
+<figure>
+    <a href="http://away3d.com/wikicontent/tutorials/materials/advanced_custom/bin/Advanced_CustomMaterials02.html" rel="shadowbox; width=800;height=600;"><img class="interactiveFigure" src="http://away3d.com/wikicontent/tutorials/materials/advanced_custom/images/CustomMaterials02.jpg"></a>
+    <figcaption>
+        Listing 1. TrivialTextureMaterial next to TrivialColorMaterial
+        <a href="https://github.com/away3d/away3d-tutorials-fp11/blob/master/tutorials/materials/advanced_custom/src/CustomMaterials02.as" target="_blank">Source code.</a>
+    </figcaption>
+</figure>
+
+These first two tutorials already provided most of the info you need to start tinkering around with writing your own custom shaders. However, there's still some upcoming tutorials to show how to access lights.
+
+</section>
+
+</article>
