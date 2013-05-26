@@ -2,7 +2,7 @@
 <module type="Flex" version="4">
   <component name="FlexBuildConfigurationManager" active="away3d-tutorials-fp11">
     <configurations>
-      <configuration name="away3d-tutorials-fp11" pure-as="true" main-class="CustomMaterials02" output-file="away3d-tutorials-fp11.swf" output-folder="$MODULE_DIR$/../out/production/away3d-tutorials-fp11" use-html-wrapper="true" wrapper-template-path="$MODULE_DIR$/html-template">
+      <configuration name="away3d-tutorials-fp11" pure-as="true" main-class="CustomMaterials03" output-file="away3d-tutorials-fp11.swf" output-folder="$MODULE_DIR$/../out/production/away3d-tutorials-fp11" use-html-wrapper="true" wrapper-template-path="$MODULE_DIR$/html-template">
         <dependencies target-player="11.6">
           <entries>
             <entry module-name="away3d-core-fp11" build-configuration-name="away3d-core-fp11">
