@@ -8,7 +8,6 @@ package
 	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
-	import away3d.materials.methods.FresnelSpecularMethod;
 	import away3d.materials.methods.SpecularShadingModel;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
@@ -106,7 +105,7 @@ package
 			var earthFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
 			earthFresnelSpecularMethod.fresnelPower = 1;
 			earthFresnelSpecularMethod.normalReflectance = 0.1;
-			earthFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
+
 			// Material for earth surface.
 			var earthSurfaceMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
 			earthSurfaceMaterial.specularMethod = earthFresnelSpecularMethod;
@@ -147,7 +146,7 @@ package
 			var moonFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
 			moonFresnelSpecularMethod.fresnelPower = 1;
 			moonFresnelSpecularMethod.normalReflectance = 0.1;
-			moonFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
+
 			// Material.
 			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
 			moonMaterial.specularMethod = moonFresnelSpecularMethod;
