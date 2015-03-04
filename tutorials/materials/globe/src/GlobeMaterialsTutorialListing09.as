@@ -12,9 +12,9 @@ package
 	import away3d.materials.methods.CompositeDiffuseMethod;
 	import away3d.materials.methods.FresnelSpecularMethod;
 	import away3d.materials.methods.MethodVO;
-	import away3d.materials.methods.SpecularShadingModel;
-	import away3d.materials.utils.ShaderRegisterCache;
-	import away3d.materials.utils.ShaderRegisterElement;
+	import away3d.materials.compilation.ShaderRegisterData;
+	import away3d.materials.compilation.ShaderRegisterCache;
+	import away3d.materials.compilation.ShaderRegisterElement;
 	import away3d.primitives.SkyBox;
 	import away3d.primitives.SphereGeometry;
 	import away3d.textures.BitmapCubeTexture;
@@ -218,7 +218,7 @@ package
 			var moonFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
 			moonFresnelSpecularMethod.fresnelPower = 1;
 			moonFresnelSpecularMethod.normalReflectance = 0.1;
-			moonFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
+
 			// Material.
 			var moonMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( MoonSurfaceDiffuse ) );
 			moonMaterial.specularMethod = moonFresnelSpecularMethod;
