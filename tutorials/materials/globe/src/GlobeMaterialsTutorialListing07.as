@@ -106,7 +106,7 @@ package
 			var earthFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
 			earthFresnelSpecularMethod.fresnelPower = 1;
 			earthFresnelSpecularMethod.normalReflectance = 0.1;
-			earthFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
+
 			// Material for earth surface.
 			var earthSurfaceMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
 			earthSurfaceMaterial.specularMethod = earthFresnelSpecularMethod;

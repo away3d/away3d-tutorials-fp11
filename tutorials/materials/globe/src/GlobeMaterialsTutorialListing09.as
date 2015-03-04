@@ -162,7 +162,7 @@ package
 			var earthFresnelSpecularMethod:FresnelSpecularMethod = new FresnelSpecularMethod( true );
 			earthFresnelSpecularMethod.fresnelPower = 1;
 			earthFresnelSpecularMethod.normalReflectance = 0.1;
-			earthFresnelSpecularMethod.shadingModel = SpecularShadingModel.PHONG;
+
 			// Material for earth surface.
 			var earthSurfaceMaterial:TextureMaterial = new TextureMaterial( Cast.bitmapTexture( EarthSurfaceDiffuse ) );
 			earthSurfaceMaterial.specularMethod = earthFresnelSpecularMethod;
@@ -201,9 +201,9 @@ package
 			_earth.addChild( earthAtmosphere );
 		}
 
-		private function modulateDiffuseMethod( vo:MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache ):String {
-			var viewDirFragmentReg:ShaderRegisterElement = _atmosphereDiffuseMethod.viewDirFragmentReg;
-			var normalFragmentReg:ShaderRegisterElement = _atmosphereDiffuseMethod.normalFragmentReg;
+		private function modulateDiffuseMethod(vo : MethodVO, t:ShaderRegisterElement, regCache:ShaderRegisterCache, sharedRegisters:ShaderRegisterData):String{
+			var viewDirFragmentReg:ShaderRegisterElement = _atmosphereDiffuseMethod.sharedRegisters.viewDirFragment;
+			var normalFragmentReg:ShaderRegisterElement = _atmosphereDiffuseMethod.sharedRegisters.normalFragment;
 			var temp:ShaderRegisterElement = regCache.getFreeFragmentSingleTemp();
 			regCache.addFragmentTempUsages( temp, 1 );
 			var code:String = "dp3 " + temp + ", " + viewDirFragmentReg + ".xyz, " + normalFragmentReg + ".xyz\n" +
